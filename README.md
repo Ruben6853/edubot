@@ -58,7 +58,7 @@ Make sure the additional ros libraries are installed
         # Install pip if not yet installed
         sudo apt-get install python3-pip
         # Install python pkg dependency (global)
-        sudo apt-get install python-catkin_pkg
+        sudo apt-get install python3-catkin-pkg
 
 #### For both 22.04 and 24.04
 
