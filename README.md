@@ -110,7 +110,8 @@ You can run start the simulation or the driver for the robot with the following 
 `ros2 launch lerobot hw_velocity.launch.py`  |  Launches the hardware interface with the robot in velocity control mode
 `ros2 run controllers example_pos_traj` |  Starts the cpp controller that commands a periodic example trajectory for the robot in position control mode
 `ros2 run controllers example_vel_traj` |  Starts the cpp controller that commands a periodic example trajectory for the robot in velocity control mode
-`ros2 run python_controllers example_traj`  | Starts the python controller that commands a periodic example trajectory
+`ros2 run python_controllers example_pos_traj`  | Starts the python controller that commands a periodic example trajectory for the robot in position control mode
+`ros2 run python_controllers example_vel_traj`  | Starts the python controller that commands a periodic example trajectory for the robot in velocity control mode
 
 ### For Virtual Machine Users
 
