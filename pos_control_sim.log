@@ -1,0 +1,22 @@
+[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-02-25-16-35-43-750817-ruben-HP-ZBook-Power-G7-Mobile-Workstation-8502
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [lerobot_sim-1]: process started with pid [8523]
+[INFO] [robot_state_publisher-2]: process started with pid [8524]
+[INFO] [rviz2-3]: process started with pid [8525]
+[robot_state_publisher-2] [INFO] [1772033743.894343542] [robot_state_publisher]: Robot initialized
+[rviz2-3] [INFO] [1772033744.199352647] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-3] [INFO] [1772033744.199635186] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-3] [INFO] [1772033744.251829704] [rviz2]: Stereo is NOT SUPPORTED
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-3]: sending signal 'SIGINT' to process[rviz2-3]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[INFO] [lerobot_sim-1]: sending signal 'SIGINT' to process[lerobot_sim-1]
+[lerobot_sim-1] [INFO] [1772033753.664585112] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[rviz2-3] [INFO] [1772033753.664620308] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1772033753.664663603] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[rviz2-3] [INFO] [1772033753.674563699] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1772033753.677048834] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lerobot_sim-1] [INFO] [1772033753.679423016] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [lerobot_sim-1]: process has finished cleanly [pid 8523]
+[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 8524]
+[INFO] [rviz2-3]: process has finished cleanly [pid 8525]
