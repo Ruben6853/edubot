@@ -12,13 +12,13 @@ ExampleTraj::ExampleTraj() :
       std::vector<double>{0, 0,
                           0, 0,
                           0});
-    this->home = this->get_parameter("home").as_double_array();
+    this->home_joint_pos = this->get_parameter("home").as_double_array();
     // Declare all parameters
     this->declare_parameter("limit",
       std::vector<double>{2, M_PI/2,
                           M_PI/2, M_PI/2,
                           M_PI});
-    this->limit = this->get_parameter("limit").as_double_array();
+    this->joint_limits_high = this->get_parameter("limit").as_double_array();
 
     this->_beginning = this->now();
     
@@ -51,38 +51,53 @@ void ExampleTraj::_joint_state_callback(const sensor_msgs::msg::JointState::Shar
 //     std::cout << "Joint " << i << ": " << msg->velocity[i] << " ";
 //   }
 //   std::cout << std::endl;
+  if (!first_state_received) {
+    RCLCPP_INFO(this->get_logger(), "First joint state received, starting trajectory execution.");
+    first_state_received = true;
+    _beginning = this->now();
+    _traj_queue.emplace(
+      joint_pos,
+      home_joint_pos,
+      10.0
+    );
+    // _traj_queue.emplace(
+    //   this->home_joint_pos,
+    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
+    //   10.0
+    // );
+    // _traj_queue.emplace(
+    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
+    //   this->home_joint_pos,
+    //   10.0
+    // );
+  }
 }
 
 void ExampleTraj::_timer_callback()
 {
+  if (!first_state_received) {
+    RCLCPP_INFO(this->get_logger(), "Waiting for first joint state...");
+    return;
+  }
   auto now = this->now();
   auto msg = trajectory_msgs::msg::JointTrajectory();
   msg.header.stamp = now;
   
   double dt = (now - this->_beginning).seconds();
   auto point = trajectory_msgs::msg::JointTrajectoryPoint();
-  std::vector<double> positions;
-  float period = 5.0;
-  uint joint_id = static_cast<long unsigned int>(dt / period) % this->home.size();
-
-  // Push joint position
-  for(uint i = 0; i < this->home.size(); i++)
-  {
-    if (i == joint_id) {
-      double posi = this->home.at(i)
-            + 1 * sin(2.0 * M_PI / period * dt)
-            * this->limit.at(i);
-      positions.push_back(posi);
-    }
-    else {
-      positions.push_back(this->home.at(i));
-    }
+  if (_traj_queue.empty()) {
+    RCLCPP_INFO(this->get_logger(), "Trajectory queue is empty, doing nothing.");
+    return;
   }
-  // Push gripper positions
-  // positions.push_back(0.5 * sin(2 * M_PI / 10.0 * dt) + 0.5);
-
+  auto& traj = _traj_queue.front();
+  if (dt > traj.get_duration()) {
+    RCLCPP_INFO(this->get_logger(), "Trajectory finished, moving to next trajectory.");
+    _traj_queue.pop();
+    _beginning = now;
+    return;
+  }
   // Finalize msg
-  point.positions = positions;
+  point.positions = traj.get_position(dt);
   msg.points = {point};
 
   // Publish

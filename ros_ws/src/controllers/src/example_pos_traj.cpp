@@ -12,7 +12,7 @@ ExampleTraj::ExampleTraj() :
       std::vector<double>{DEG2RAD * 0, -DEG2RAD * 105,
                           DEG2RAD * 70, DEG2RAD * 60,
                           DEG2RAD * 0});
-    this->home = this->get_parameter("home").as_double_array();
+    this->home_joint_pos = this->get_parameter("home").as_double_array();
 
     this->_beginning = this->now();
     
@@ -39,9 +39,9 @@ void ExampleTraj::_timer_callback()
 
   std::vector<double> offsets = {0, 0.6, -0.4, -0.4, 0, 0};
   // Push joint position
-  for(uint i = 0; i < this->home.size(); i++)
+  for(uint i = 0; i < this->home_joint_pos.size(); i++)
   {
-    double posi = this->home.at(i)
+    double posi = this->home_joint_pos.at(i)
             + 0.125 * M_PI * sin(2.0 * M_PI / 10.0 * dt)
             + offsets.at(i);
     positions.push_back(posi);

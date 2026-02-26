@@ -10,7 +10,7 @@ private:
     rclcpp::Time _beginning;
     void _timer_callback();
 
-    std::vector<double> home;
+    std::vector<double> home_joint_pos;
 
 public:
     ExampleTraj();
