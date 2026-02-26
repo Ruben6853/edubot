@@ -16,7 +16,8 @@ private:
 
     std::vector<double> home;
     std::vector<double> limit;
-    std::vector<double> state;
+    std::vector<double> joint_pos = {0, 0, 0, 0, 0};
+    std::vector<double> joint_vel = {0, 0, 0, 0, 0};
 public:
     ExampleTraj();
 };

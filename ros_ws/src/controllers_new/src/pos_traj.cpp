@@ -23,20 +23,35 @@ ExampleTraj::ExampleTraj() :
     this->_beginning = this->now();
     
     // Make QoS for publisher
-    rclcpp::QoS qos(rclcpp::KeepLast(1));
-    qos.reliable();
-    qos.durability_volatile();
+    rclcpp::QoS qos_pos_cmd_pub(rclcpp::KeepLast(1));
+    qos_pos_cmd_pub.reliable();
+    qos_pos_cmd_pub.durability_volatile();
+    this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos_pos_cmd_pub);
 
-    this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
+    rclcpp::QoS qos_joint_state_sub(rclcpp::KeepLast(1));
+    qos_joint_state_sub.best_effort();
+    qos_joint_state_sub.durability_volatile();
     this->_joint_state_subscriber = this->create_subscription<sensor_msgs::msg::JointState>(
-      "joint_states", qos, std::bind(&ExampleTraj::_joint_state_callback, this, std::placeholders::_1));
+      "joint_states", qos_joint_state_sub, std::bind(&ExampleTraj::_joint_state_callback, this, std::placeholders::_1));
+
     this->_timer = this->create_wall_timer(
-      100ms, std::bind(&ExampleTraj::_timer_callback, this));
+      10ms, std::bind(&ExampleTraj::_timer_callback, this));
 }
 
 void ExampleTraj::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
-  this->state = msg->position;
-}
+  this->joint_pos = msg->position;
+  this->joint_vel = msg->velocity;
+//   std::cout << "Received joint positions: ";
+//   for (size_t i = 0; i < msg->position.size(); i++)  {
+//     std::cout << "Joint " << i << ": " << msg->position[i] << " ";
+//   }
+//   std::cout << std::endl;
+//   std::cout << "Received joint velocities: ";
+//   for (size_t i = 0; i < msg->velocity.size(); i++)  {
+//     std::cout << "Joint " << i << ": " << msg->velocity[i] << " ";
+//   }
+//   std::cout << std::endl;
+// }
 
 void ExampleTraj::_timer_callback()
 {
