@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -18,7 +19,7 @@ find_package(Eigen3 REQUIRED)
 include_directories($<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>)
 
 add_executable(pos_traj src/pos_traj.cpp)
-ament_target_dependencies(pos_traj rclcpp trajectory_msgs)
+ament_target_dependencies(pos_traj rclcpp trajectory_msgs sensor_msgs)
 target_include_directories(pos_traj PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/controllers_new>
   $<INSTALL_INTERFACE:include>)

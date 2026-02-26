@@ -3,7 +3,7 @@
 constexpr double DEG2RAD = M_PI / 180.0;
 
 ExampleTraj::ExampleTraj() :
-  rclcpp::Node("example_traj")
+  rclcpp::Node("traj_ctrl")
 {
     using namespace std::chrono_literals;
 
@@ -27,9 +27,15 @@ ExampleTraj::ExampleTraj() :
     qos.reliable();
     qos.durability_volatile();
 
-    this->_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
+    this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
+    this->_joint_state_subscriber = this->create_subscription<sensor_msgs::msg::JointState>(
+      "joint_states", qos, std::bind(&ExampleTraj::_joint_state_callback, this, std::placeholders::_1));
     this->_timer = this->create_wall_timer(
       100ms, std::bind(&ExampleTraj::_timer_callback, this));
+}
+
+void ExampleTraj::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
+  this->state = msg->position;
 }
 
 void ExampleTraj::_timer_callback()
@@ -65,7 +71,7 @@ void ExampleTraj::_timer_callback()
   msg.points = {point};
 
   // Publish
-  this->_publisher->publish(msg);
+  this->_pos_cmd_publisher->publish(msg);
 }
 
 int main(int argc, char ** argv)

@@ -1,1 +1,2 @@
-[INFO] [1772033753.664746875] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[WARN] [1772113055.458028544] [traj_ctrl]: New publisher discovered on topic '/joint_states', offering incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY_QOS_POLICY
+[INFO] [1772113063.036773278] [rclcpp]: signal_handler(SIGINT/SIGTERM)

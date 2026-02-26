@@ -21,7 +21,7 @@ ExampleTraj::ExampleTraj() :
     qos.reliable();
     qos.durability_volatile();
 
-    this->_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
+    this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
     this->_timer = this->create_wall_timer(
       100ms, std::bind(&ExampleTraj::_timer_callback, this));
 }
@@ -54,7 +54,7 @@ void ExampleTraj::_timer_callback()
   msg.points = {point};
 
   // Publish
-  this->_publisher->publish(msg);
+  this->_pos_cmd_publisher->publish(msg);
 }
 
 int main(int argc, char ** argv)
