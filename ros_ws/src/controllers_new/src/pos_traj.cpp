@@ -51,7 +51,7 @@ void ExampleTraj::_joint_state_callback(const sensor_msgs::msg::JointState::Shar
 //     std::cout << "Joint " << i << ": " << msg->velocity[i] << " ";
 //   }
 //   std::cout << std::endl;
-// }
+}
 
 void ExampleTraj::_timer_callback()
 {
