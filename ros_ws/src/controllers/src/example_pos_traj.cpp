@@ -2,7 +2,7 @@
 
 constexpr double DEG2RAD = M_PI / 180.0;
 
-ExampleTraj::ExampleTraj() :
+Controller::Controller() :
   rclcpp::Node("example_traj")
 {
     using namespace std::chrono_literals;
@@ -23,10 +23,10 @@ ExampleTraj::ExampleTraj() :
 
     this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos);
     this->_timer = this->create_wall_timer(
-      100ms, std::bind(&ExampleTraj::_timer_callback, this));
+      100ms, std::bind(&Controller::_timer_callback, this));
 }
 
-void ExampleTraj::_timer_callback()
+void Controller::_timer_callback()
 {
   auto now = this->now();
   auto msg = trajectory_msgs::msg::JointTrajectory();
@@ -61,7 +61,7 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
     
-  rclcpp::spin(std::make_shared<ExampleTraj>());
+  rclcpp::spin(std::make_shared<Controller>());
   rclcpp::shutdown();
   return 0;
 }

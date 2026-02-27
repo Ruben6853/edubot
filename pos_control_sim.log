@@ -1,26 +1,22 @@
-[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-02-26-16-44-28-491599-ruben-HP-ZBook-Power-G7-Mobile-Workstation-16631
+[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-02-27-14-26-57-707231-ruben-HP-ZBook-Power-G7-Mobile-Workstation-6485
 [INFO] [launch]: Default logging verbosity is set to INFO
-[INFO] [lerobot_sim-1]: process started with pid [16651]
-[INFO] [robot_state_publisher-2]: process started with pid [16652]
-[INFO] [rviz2-3]: process started with pid [16653]
-[robot_state_publisher-2] [INFO] [1772120668.696299620] [robot_state_publisher]: Robot initialized
-[rviz2-3] [INFO] [1772120669.086966109] [rviz2]: Stereo is NOT SUPPORTED
-[rviz2-3] [INFO] [1772120669.087164642] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
-[rviz2-3] [INFO] [1772120669.113572747] [rviz2]: Stereo is NOT SUPPORTED
+[INFO] [lerobot_sim-1]: process started with pid [6509]
+[INFO] [robot_state_publisher-2]: process started with pid [6510]
+[INFO] [rviz2-3]: process started with pid [6511]
+[robot_state_publisher-2] [INFO] [1772198817.861156668] [robot_state_publisher]: Robot initialized
+[rviz2-3] [INFO] [1772198818.154060986] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-3] [INFO] [1772198818.155020173] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-3] [INFO] [1772198818.181646402] [rviz2]: Stereo is NOT SUPPORTED
 [WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
 [INFO] [rviz2-3]: sending signal 'SIGINT' to process[rviz2-3]
 [INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
 [INFO] [lerobot_sim-1]: sending signal 'SIGINT' to process[lerobot_sim-1]
-[lerobot_sim-1] [INFO] [1772120681.760238492] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[rviz2-3] [INFO] [1772120681.760293812] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[robot_state_publisher-2] [INFO] [1772120681.760415883] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[rviz2-3] [INFO] [1772120681.771819803] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[robot_state_publisher-2] [INFO] [1772120681.774397240] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[lerobot_sim-1] [INFO] [1772120681.777274564] [rclcpp]: signal_handler(SIGINT/SIGTERM)
-[rviz2-3] MESA: error: dri3_alloc_render_buffer:1626 xcb_dri3_pixmap_from_buffer[s] failed
-[rviz2-3] MESA: error: X error: 9
-[rviz2-3] MESA: error: dri3_alloc_render_buffer:1626 xcb_dri3_pixmap_from_buffer[s] failed
-[rviz2-3] MESA: error: X error: 9
-[INFO] [lerobot_sim-1]: process has finished cleanly [pid 16651]
-[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 16652]
-[INFO] [rviz2-3]: process has finished cleanly [pid 16653]
+[rviz2-3] [INFO] [1772199010.140408952] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1772199010.140421377] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lerobot_sim-1] [INFO] [1772199010.140426305] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[rviz2-3] [INFO] [1772199010.143849677] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1772199010.144546944] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lerobot_sim-1] [INFO] [1772199010.145203302] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [lerobot_sim-1]: process has finished cleanly [pid 6509]
+[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 6510]
+[INFO] [rviz2-3]: process has finished cleanly [pid 6511]

@@ -1,345 +1,38 @@
-[INFO] [1772120668.333138555] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.343162136] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.353163712] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.363150701] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.373160870] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.384334605] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.393274607] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.403271132] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.413362909] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.423254617] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.433207764] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.443271217] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.453200415] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.463206272] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.473230778] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.483234281] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.493201417] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.503173392] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.513183370] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.523155886] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.533175752] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.543154915] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.553144114] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.563140462] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.573156655] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.583175445] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.593146263] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.603264193] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.613251450] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.623247089] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.633252666] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.643264854] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.653266646] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.663297696] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.673211092] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.683191183] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.693168113] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.703166854] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.713146344] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.723152367] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.733135902] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.743180547] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.753156310] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.763134998] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.773143602] [traj_ctrl]: Waiting for first joint state...
-[INFO] [1772120668.774770859] [traj_ctrl]: First joint state received, starting trajectory execution.
-[INFO] [1772120678.783150808] [traj_ctrl]: Trajectory finished, moving to next trajectory.
-[INFO] [1772120678.793144743] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.803156797] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.813127573] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.823171827] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.833131823] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.843122513] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.853122520] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.863135507] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.873531788] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.883259339] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.893264273] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.903393181] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.913279490] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.923270887] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.933272117] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.943320338] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.953294045] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.963306512] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.973318026] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.983351538] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120678.993299126] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.003334531] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.013301827] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.023333191] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.033248608] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.043332402] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.053306475] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.063275217] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.073253559] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.083304439] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.093319698] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.103343558] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.113284739] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.123272150] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.133320601] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.143330632] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.153279130] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.163207303] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.173327973] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.183240096] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.193326520] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.203331113] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.213323798] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.223462053] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.233274283] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.243250140] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.253478489] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.263331216] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.273279368] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.283332191] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.293331463] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.303386023] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.313296235] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.323352162] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.333243958] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.343238902] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.353268285] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.363454665] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.373243457] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.383259746] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.393463021] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.403270809] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.413267081] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.423317557] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.433294673] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.443323784] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.453308548] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.463354099] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.473252172] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.483261310] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.493341650] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.503287152] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.513276091] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.523273696] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.533266288] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.543211915] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.553208708] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.563259361] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.573321682] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.583280214] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.593294358] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.603301795] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.613376805] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.623286907] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.633242130] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.643355210] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.653279954] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.663297023] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.673297587] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.683342164] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.693250263] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.703251461] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.713612343] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.723263822] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.733360257] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.743267975] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.753281278] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.763271809] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.773264380] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.783297663] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.793247078] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.803254416] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.813237393] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.823265151] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.833257762] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.843332115] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.853290542] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.863346085] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.873261023] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.883270490] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.893271723] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.903287333] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.913292365] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.923290998] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.933302687] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.943210579] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.953301439] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.963318684] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.973245538] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.983268011] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120679.993321955] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.003328698] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.013288586] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.023259657] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.033248770] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.043264114] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.053337091] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.063610887] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.073269660] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.083244846] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.093332691] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.103310034] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.113257157] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.123344383] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.133346086] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.143230742] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.153271059] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.163246370] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.173283038] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.183307190] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.193470098] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.203286259] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.213272071] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.223309253] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.233284752] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.243249977] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.253500459] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.263345504] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.273334278] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.283331500] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.293323820] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.303271550] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.313273333] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.323340236] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.333282415] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.343425009] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.353358935] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.363269515] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.373317954] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.383349027] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.393306130] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.403332626] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.413322635] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.423338784] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.433300601] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.443317311] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.453347681] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.463245217] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.473330197] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.483609182] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.493323883] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.503506661] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.513317117] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.523282306] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.533372181] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.543375822] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.553280206] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.563315521] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.573249691] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.583351950] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.593314374] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.603346554] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.613337949] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.623344008] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.633307309] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.643512769] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.653272218] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.663262551] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.673366918] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.683235055] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.693239438] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.703204502] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.713273866] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.723260898] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.733283941] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.743352908] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.753303800] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.763281538] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.773324837] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.783260320] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.793264335] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.803494494] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.813212605] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.823261749] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.833259395] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.843268548] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.853314096] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.863315580] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.873300048] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.883295662] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.893369731] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.903516927] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.913350375] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.923443907] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.933276612] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.943334206] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.953294222] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.963511954] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.973283695] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.983257944] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120680.993519675] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.003246327] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.013350004] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.023263446] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.033301224] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.043322114] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.053295691] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.063666622] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.073253523] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.083294268] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.093457429] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.103295718] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.113326926] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.123338521] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.133257675] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.143212079] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.153261369] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.163233878] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.173193802] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.183358945] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.193288431] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.203213225] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.213300179] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.223480596] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.233235997] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.243248840] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.253311791] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.263270607] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.273333127] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.283329514] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.293261735] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.303284574] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.313296210] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.323294066] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.333290435] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.343330076] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.353301588] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.363263134] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.373279733] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.383271507] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.393267051] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.403285171] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.413284228] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.423256992] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.433254502] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.443265394] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.453255817] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.463324079] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.473302327] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.483247315] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.493266678] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.503283560] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.513294785] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.523290605] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.533283044] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.543311521] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.553264051] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.563283534] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.573260187] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.583254261] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.593266285] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.603316799] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.613272369] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.623279401] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.633272579] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.643253586] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.653253922] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.663252633] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.673240259] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.683290364] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.693255078] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.703234646] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.713254402] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.723277135] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.733276356] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.743281959] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.753263876] [traj_ctrl]: Trajectory queue is empty, doing nothing.
-[INFO] [1772120681.760238978] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [1772198817.633184876] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.643210670] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.653159927] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.663159001] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.673153279] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.683151503] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.693159317] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.703163778] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.713193874] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.723195587] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.733195657] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.743182422] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.753171202] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.763189135] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.773194562] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.783185685] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.793188449] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.803196665] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.813165251] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.823223545] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.833222505] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.843202830] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.853195688] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.863156920] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.873155432] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.883155359] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.893192172] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.903191978] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.913168828] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.923168022] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.933173238] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.943165250] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.953174166] [traj_ctrl]: Waiting for first joint state...
+[INFO] [1772198817.961623296] [traj_ctrl]: First joint state received, starting trajectory execution.
+[INFO] [1772198827.963151108] [traj_ctrl]: Trajectory finished, moving to next trajectory.
+[INFO] [1772198837.963221684] [traj_ctrl]: Trajectory finished, moving to next trajectory.
+[INFO] [1772198847.963200806] [traj_ctrl]: Trajectory finished, moving to next trajectory.
+[ros2run]: Segmentation fault

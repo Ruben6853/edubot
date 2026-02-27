@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
 
-class ExampleTraj : public rclcpp::Node
+class Controller : public rclcpp::Node
 {
 private:
     rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr _pos_cmd_publisher;
@@ -13,7 +13,7 @@ private:
     std::vector<double> home_joint_pos;
 
 public:
-    ExampleTraj();
+    Controller();
 };
 
     
