@@ -1,0 +1,5 @@
+[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-02-27-15-56-23-440066-ruben-HP-ZBook-Power-G7-Mobile-Workstation-7185
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [lerobot_hw-1]: process started with pid [7212]
+[lerobot_hw-1] [31m[ERROR] Could not open serial port, is the USB connected and baud rate correct?[0m
+[ERROR] [lerobot_hw-1]: process has died [pid 7212, exit code 1, cmd '/home/ruben/edubot/ros_ws/install/lerobot/lib/lerobot/lerobot_hw --ros-args -r __node:=lerobot --params-file /home/ruben/edubot/ros_ws/install/lerobot/share/lerobot/config/robot_hw.yaml --params-file /tmp/launch_params_x1sgfcex'].
