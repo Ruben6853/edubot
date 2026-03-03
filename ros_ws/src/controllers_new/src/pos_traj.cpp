@@ -35,22 +35,31 @@ Controller::Controller() :
       "joint_states", qos_joint_state_sub, std::bind(&Controller::_joint_state_callback, this, std::placeholders::_1));
 
     this->_timer = this->create_wall_timer(
-      10ms, std::bind(&Controller::_timer_callback, this));
+      100ms, std::bind(&Controller::_timer_callback, this));
 }
 
 void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
   this->joint_pos = msg->position;
+  // following is a fix to wrong state published
+  // for (size_t i = 0; i < msg->position.size(); i++) {
+  //   joint_pos[i] = std::fmod(joint_pos[i], 2*M_PI);
+  //   if (joint_pos[i] > 0) {
+  //     joint_pos[i] = M_PI - joint_pos[i];
+  //   } else {
+  //     joint_pos[i] = -M_PI - joint_pos[i];
+  //   }
+  // }
   this->joint_vel = msg->velocity;
-//   std::cout << "Received joint positions: ";
-//   for (size_t i = 0; i < msg->position.size(); i++)  {
-//     std::cout << "Joint " << i << ": " << msg->position[i] << " ";
-//   }
-//   std::cout << std::endl;
-//   std::cout << "Received joint velocities: ";
-//   for (size_t i = 0; i < msg->velocity.size(); i++)  {
-//     std::cout << "Joint " << i << ": " << msg->velocity[i] << " ";
-//   }
-//   std::cout << std::endl;
+   std::cout << "Received joint positions: ";
+   for (size_t i = 0; i < this->joint_pos.size(); i++)  {
+     std::cout << "Joint " << i << ": " << this->joint_pos[i] << " ";
+   }
+   std::cout << std::endl;
+   std::cout << "Received joint velocities: ";
+   for (size_t i = 0; i < msg->velocity.size(); i++)  {
+     std::cout << "Joint " << i << ": " << msg->velocity[i] << " ";
+   }
+   std::cout << std::endl;
   if (!first_state_received) {
     RCLCPP_INFO(this->get_logger(), "First joint state received, starting trajectory execution.");
     first_state_received = true;
@@ -60,16 +69,31 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
       home_joint_pos,
       10.0
     ));
+    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    //   this->home_joint_pos,
+    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
+    //   10.0
+    // ));
+    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
+    //   this->home_joint_pos,
+    //   10.0
+    // ));
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-      this->home_joint_pos,
-      std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
+    home_joint_pos,
+      std::vector<double>{1.5, -0.4, -0.3, -1.3, 0.0, 1.5},
       10.0
     ));
-    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-      std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
-      this->home_joint_pos,
-      10.0
-    ));
+    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 0.0},
+    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 1.8},
+    //   3.0
+    // ));
+    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 1.8},
+    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 0.0},
+    //   3.0
+    // ));
   }
 }
 

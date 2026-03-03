@@ -1,10 +1,10 @@
-[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-02-27-15-53-13-259557-ruben-HP-ZBook-Power-G7-Mobile-Workstation-5991
+[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-03-03-13-54-44-896391-ruben-HP-ZBook-Power-G7-Mobile-Workstation-7109
 [INFO] [launch]: Default logging verbosity is set to INFO
-[INFO] [lerobot_sim-1]: process started with pid [6019]
-[INFO] [robot_state_publisher-2]: process started with pid [6020]
-[INFO] [rviz2-3]: process started with pid [6021]
-[robot_state_publisher-2] [INFO] [1772203993.484997999] [robot_state_publisher]: Robot initialized
-[rviz2-3] [INFO] [1772203993.872175079] [rviz2]: Stereo is NOT SUPPORTED
-[rviz2-3] [INFO] [1772203993.872341794] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
-[rviz2-3] [INFO] [1772203993.898940520] [rviz2]: Stereo is NOT SUPPORTED
+[INFO] [lerobot_sim-1]: process started with pid [7147]
+[INFO] [robot_state_publisher-2]: process started with pid [7148]
+[INFO] [rviz2-3]: process started with pid [7149]
+[robot_state_publisher-2] [INFO] [1772542485.109355582] [robot_state_publisher]: Robot initialized
+[rviz2-3] [INFO] [1772542485.440768097] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-3] [INFO] [1772542485.440989209] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-3] [INFO] [1772542485.474543809] [rviz2]: Stereo is NOT SUPPORTED
 [WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
