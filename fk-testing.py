@@ -20,7 +20,7 @@ frames = [
     {'parent': 'lower_arm', 'child': 'wrist', 'translation': np.array([0.0052, -0.1349, 0.0]), 'rotation': np.array([0.0, 0.0, 1.57079])},
     {'parent': 'wrist', 'child': 'gripper', 'translation': np.array([-0.0601, 0.0, 0.0]), 'rotation': np.array([0.0, -1.57079, 0.0])},
     {'parent': 'gripper', 'child': 'gripper_center', 'translation': np.array([0.0, 0.0, 0.075]), 'rotation': np.array([0.0, 0.0, 0.0])},
-    {'parent': 'gripper', 'child': 'jaw', 'translation': np.array([-0.0202, 0.0, 0.0244]), 'rotation': np.array([1.57079, 3.14158, 0.0])}
+    # {'parent': 'gripper', 'child': 'jaw', 'translation': np.array([-0.0202, 0.0, 0.0244]), 'rotation': np.array([1.57079, 3.14158, 0.0])}
 ]
 
 # transforms the joints apply in what coordinate frame
@@ -30,7 +30,7 @@ actuators = {
     'lower_arm': {'axis': 'z', 'lim_low': -np.pi/2, 'lim_high': np.pi/2},
     'wrist':     {'axis': 'z', 'lim_low': -np.pi/2, 'lim_high': np.pi/2},
     'gripper':   {'axis': 'z', 'lim_low': -np.pi, 'lim_high': np.pi},
-    'jaw':       {'axis': 'z', 'lim_low': -0.2, 'lim_high': 2},
+    # 'jaw':       {'axis': 'z', 'lim_low': -0.2, 'lim_high': 2},
 }
 
 actuators_no_lim = {
@@ -39,7 +39,7 @@ actuators_no_lim = {
     'lower_arm': {'axis': 'z', 'lim_low': -np.pi, 'lim_high': np.pi},
     'wrist':     {'axis': 'z', 'lim_low': -np.pi, 'lim_high': np.pi},
     'gripper':   {'axis': 'z', 'lim_low': -np.pi, 'lim_high': np.pi},
-    'jaw':       {'axis': 'z', 'lim_low': -0.2, 'lim_high': 2},
+    # 'jaw':       {'axis': 'z', 'lim_low': -0.2, 'lim_high': 2},
 }
 
 actuators_for_ws = {
@@ -48,16 +48,16 @@ actuators_for_ws = {
     'lower_arm': {'axis': 'z', 'lim_low': np.pi/2, 'lim_high': np.pi/2}, # straight with upper arm
     'wrist':     {'axis': 'z', 'lim_low': 0, 'lim_high': 0}, # zero to keep stretched out
     'gripper':   {'axis': 'z', 'lim_low': 0, 'lim_high': 0}, # dont care
-    'jaw':       {'axis': 'z', 'lim_low': 0, 'lim_high': 0}, # dont care
+    # 'jaw':       {'axis': 'z', 'lim_low': 0, 'lim_high': 0}, # dont care
 }
 
 
 def propagate_transform(frames, actuators, joint_angles):
     running_transform = np.eye(4)
     joint_id = 0
-    out = {}
+    transforms = {}
     for frame in frames:
-        out[frame['child']] = {}
+        transforms[frame['child']] = {}
         local_transform_rot = tf.Rotation.from_euler('xyz', frame['rotation']).as_matrix()
         local_transform = np.eye(4)
         local_transform[:3, :3] = local_transform_rot
@@ -68,10 +68,37 @@ def propagate_transform(frames, actuators, joint_angles):
             actuator_transform[:3, :3] = actuator_transform_rot
             local_transform = local_transform @ actuator_transform
             joint_id += 1
-        out[frame['child']][frame['parent']] = local_transform
+        transforms[frame['child']][frame['parent']] = local_transform
         running_transform = running_transform @ local_transform
-        out[frame['child']]['world'] = running_transform
-    return out
+        transforms[frame['child']]['world'] = running_transform
+    return transforms
+
+def create_jacobian(frames, actuators, joint_angles):
+    transforms = propagate_transform(frames, actuators, joint_angles)
+    end_effector_pos = transforms['gripper_center']['world'][:3, 3]
+    jacobian = np.zeros((6, len(actuators)))
+    for i, (actuator_name, actuator_data) in enumerate(actuators.items()):
+        # find the frame associated with this actuator
+        for frame in frames:
+            if frame['child'] == actuator_name:
+                joint_frame = frame
+                break
+        else:
+            continue  # skip if no frame found for this actuator
+        joint_pos = transforms[joint_frame['child']]['world'][:3, 3]
+        joint_axis = transforms[joint_frame['child']]['world'][:3, 2]  # assuming rotation around z-axis in local frame
+        # compute the contribution of this joint to the end effector velocity
+        linear_contribution = np.cross(joint_axis, end_effector_pos - joint_pos)
+        angular_contribution = joint_axis
+        jacobian[:3, i] = linear_contribution
+        jacobian[3:, i] = angular_contribution
+    return jacobian
+
+def best_inverse(jacobian):
+    try:
+        return np.linalg.inv(jacobian)
+    except np.linalg.LinAlgError:
+        return np.linalg.pinv(jacobian)
 
 def plot_state() -> None:
     transforms = propagate_transform(
@@ -115,4 +142,7 @@ def plot_workspace(actuators):
 
 if __name__ == '__main__':
     # plot_state()
-    plot_workspace(actuators)
+    # plot_workspace(actuators)
+    jacobian = create_jacobian(frames, actuators, [0.0, 0.6, -1.3, 0.7, 0.0, 0.0])
+    jacobian_inverse = best_inverse(jacobian)
+    pass
