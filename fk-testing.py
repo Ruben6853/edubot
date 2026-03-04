@@ -86,7 +86,7 @@ def create_jacobian(frames, actuators, joint_angles):
         else:
             continue  # skip if no frame found for this actuator
         joint_pos = transforms[joint_frame['child']]['world'][:3, 3]
-        joint_axis = transforms[joint_frame['child']]['world'][:3, 2]  # assuming rotation around z-axis in local frame
+        joint_axis = transforms[joint_frame['child']]['world'][:3, 2]
         # compute the contribution of this joint to the end effector velocity
         linear_contribution = np.cross(joint_axis, end_effector_pos - joint_pos)
         angular_contribution = joint_axis
@@ -100,13 +100,12 @@ def best_inverse(jacobian):
     except np.linalg.LinAlgError:
         return np.linalg.pinv(jacobian)
 
-def plot_state() -> None:
+def plot_state(joint_state) -> None:
     transforms = propagate_transform(
         frames, actuators,
-        [0.0, 0.6, -1.3, 0.7, 0.0, 0.0])
+        joint_state)
     xs, ys, zs = [], [], []
     for key, transform in transforms.items():
-        print(key)
         origin = transform['world'][:3, 3]
         xs.append(origin[0])
         ys.append(origin[1])
@@ -140,9 +139,27 @@ def plot_workspace(actuators):
     plt.show()
     pass
 
+def ee_pos(state):
+    transforms = propagate_transform(frames, actuators, state)
+    return transforms['gripper_center']['world'][:3, 3]
+
+def ik_vel_test():
+    target_velocity = np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0]) # move along x axis
+    state = np.array([0.0, 0.6, -1.3, 0.7-1.5, 0.0])
+    print(ee_pos(state))
+    plot_state(state)
+    total_time = 1.0
+    n_steps = 1000
+    for i in range(n_steps):
+        jacobian = create_jacobian(frames, actuators, state)
+        jacobian_inverse = best_inverse(jacobian)
+        joint_velocities = jacobian_inverse @ target_velocity
+        state += joint_velocities * (total_time / n_steps)
+    print(ee_pos(state))
+    plot_state(state)
+
 if __name__ == '__main__':
-    # plot_state()
+    # plot_state([0.0, 0.6, -1.3, 0.7, 0.0])
     # plot_workspace(actuators)
-    jacobian = create_jacobian(frames, actuators, [0.0, 0.6, -1.3, 0.7, 0.0, 0.0])
-    jacobian_inverse = best_inverse(jacobian)
+    ik_vel_test()
     pass
