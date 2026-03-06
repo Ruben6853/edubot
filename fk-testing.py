@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.spatial.transform as tf
-from boost.mpi import world
 from matplotlib import pyplot as plt
 
 
@@ -144,7 +143,7 @@ def ee_pos(state):
     return transforms['gripper_center']['world'][:3, 3]
 
 def ik_vel_test():
-    target_velocity = np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0]) # move along x axis
+    target_velocity = np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0])
     state = np.array([0.0, 0.6, -1.3, 0.7-1.5, 0.0])
     print(ee_pos(state))
     plot_state(state)
@@ -158,8 +157,25 @@ def ik_vel_test():
     print(ee_pos(state))
     plot_state(state)
 
+def ik_vel_test_dont_care_orient():
+    target_velocity = np.array([0.2, 0.0, 0.0, 0.0, 0.0, 0.0])
+    state = np.array([0.0, 0.6, -1.3, 0.7, 0.0])
+    print(ee_pos(state))
+    plot_state(state)
+    total_time = 1.0
+    n_steps = 1000
+    for i in range(n_steps):
+        jacobian = create_jacobian(frames, actuators, state)
+        jacobian_pos = jacobian[:3, :]
+        jacobian_inverse = best_inverse(jacobian_pos)
+        joint_velocities = jacobian_inverse @ target_velocity[:3]
+        state += joint_velocities * (total_time / n_steps)
+    print(ee_pos(state))
+    plot_state(state)
+
 if __name__ == '__main__':
     # plot_state([0.0, 0.6, -1.3, 0.7, 0.0])
     # plot_workspace(actuators)
     ik_vel_test()
+    ik_vel_test_dont_care_orient()
     pass
