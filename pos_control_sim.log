@@ -1,10 +1,22 @@
-[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-03-03-13-54-44-896391-ruben-HP-ZBook-Power-G7-Mobile-Workstation-7109
+[INFO] [launch]: All log files can be found below /home/ruben/.ros/log/2026-03-09-12-45-47-729900-ruben-HP-ZBook-Power-G7-Mobile-Workstation-168937
 [INFO] [launch]: Default logging verbosity is set to INFO
-[INFO] [lerobot_sim-1]: process started with pid [7147]
-[INFO] [robot_state_publisher-2]: process started with pid [7148]
-[INFO] [rviz2-3]: process started with pid [7149]
-[robot_state_publisher-2] [INFO] [1772542485.109355582] [robot_state_publisher]: Robot initialized
-[rviz2-3] [INFO] [1772542485.440768097] [rviz2]: Stereo is NOT SUPPORTED
-[rviz2-3] [INFO] [1772542485.440989209] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
-[rviz2-3] [INFO] [1772542485.474543809] [rviz2]: Stereo is NOT SUPPORTED
+[INFO] [lerobot_sim-1]: process started with pid [168958]
+[INFO] [robot_state_publisher-2]: process started with pid [168959]
+[INFO] [rviz2-3]: process started with pid [168960]
+[robot_state_publisher-2] [INFO] [1773056747.945362052] [robot_state_publisher]: Robot initialized
+[rviz2-3] [INFO] [1773056748.348975109] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-3] [INFO] [1773056748.349118297] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-3] [INFO] [1773056748.377279400] [rviz2]: Stereo is NOT SUPPORTED
 [WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-3]: sending signal 'SIGINT' to process[rviz2-3]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[INFO] [lerobot_sim-1]: sending signal 'SIGINT' to process[lerobot_sim-1]
+[lerobot_sim-1] [INFO] [1773056752.928679537] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1773056752.929380914] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[rviz2-3] [INFO] [1773056752.930759295] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[rviz2-3] [INFO] [1773056752.941912129] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[lerobot_sim-1] [INFO] [1773056752.950051697] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-2] [INFO] [1773056752.949844147] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [lerobot_sim-1]: process has finished cleanly [pid 168958]
+[INFO] [robot_state_publisher-2]: process has finished cleanly [pid 168959]
+[INFO] [rviz2-3]: process has finished cleanly [pid 168960]

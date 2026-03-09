@@ -3,6 +3,7 @@
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
+#include "kinematics.hpp"
 
 class JointPath {
 protected:

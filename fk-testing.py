@@ -173,9 +173,15 @@ def ik_vel_test_dont_care_orient():
     print(ee_pos(state))
     plot_state(state)
 
+def fk_test():
+    state = np.array([1.0, 0.0, -1.0, 0.0, 0.0])
+    print(ee_pos(state))
+    plot_state(state)
+
 if __name__ == '__main__':
     # plot_state([0.0, 0.6, -1.3, 0.7, 0.0])
     # plot_workspace(actuators)
-    ik_vel_test()
-    ik_vel_test_dont_care_orient()
+    # ik_vel_test()
+    # ik_vel_test_dont_care_orient()
+    fk_test()
     pass

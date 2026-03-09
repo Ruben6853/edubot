@@ -18,11 +18,18 @@ find_package(Eigen3 REQUIRED)
 # Add include directories
 include_directories($<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>)
 
-add_executable(pos_traj src/pos_traj.cpp)
-ament_target_dependencies(pos_traj rclcpp trajectory_msgs sensor_msgs)
+add_executable(pos_traj
+        src/pos_traj.cpp
+)
+ament_target_dependencies(pos_traj
+        rclcpp
+        trajectory_msgs
+        sensor_msgs
+)
 target_include_directories(pos_traj PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/controllers_new>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>
+)
 target_compile_features(pos_traj PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 

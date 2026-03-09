@@ -36,19 +36,38 @@ Controller::Controller() :
 
     this->_timer = this->create_wall_timer(
       100ms, std::bind(&Controller::_timer_callback, this));
+
+    km::SequentialRobot model({
+      KMLINK("base", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, M_PI),
+      KMLINK("shoulder_base", 0.0f, -0.0452f, 0.0165f, 0.0f, 0.0f, 0.0f),
+      KMREV("shoulder_yaw", -2.0f, 2.0f),
+      KMLINK("shoulder_link", 0.0f, -0.0306f, 0.1025f, 0.0f, -M_PI/2, 0.0f),
+      KMREV("shoulder_pitch", -M_PI/2, M_PI/2),
+      KMLINK("upper_arm", 0.11257f, -0.028f, 0.0f, 0.0f, 0.0f, 0.0f),
+      KMREV("elbow", -M_PI/2, M_PI/2),
+      KMLINK("lower_arm", 0.0052f, -0.1349f, 0.0f, 0.0f, 0.0f, M_PI/2),
+      KMREV("wrist_pitch", -M_PI/2, M_PI/2),
+      KMLINK("wrist_link", -0.0601f, 0.0f, 0.0f, 0.0f, -M_PI/2, 0.0f),
+      KMREV("wrist_roll", -M_PI, M_PI),
+      KMLINK("gripper_center", 0.0f, 0.0f, 0.075f, 0.0f, 0.0f, 0.0f)
+      });
+    model.set_joint_positions({1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
+    model.forward_kinematics();
+    auto ee_pos = model.get_end_effector_position();
+      std::cout << "End effector position: [" << ee_pos.x() << ", " << ee_pos.y() << ", " << ee_pos.z() << "]" << std::endl;
 }
 
 void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
   this->joint_pos = msg->position;
   // following is a fix to wrong state published
-  // for (size_t i = 0; i < msg->position.size(); i++) {
-  //   joint_pos[i] = std::fmod(joint_pos[i], 2*M_PI);
-  //   if (joint_pos[i] > 0) {
-  //     joint_pos[i] = M_PI - joint_pos[i];
-  //   } else {
-  //     joint_pos[i] = -M_PI - joint_pos[i];
-  //   }
-  // }
+  for (size_t i = 0; i < msg->position.size(); i++) {
+    joint_pos[i] = std::fmod(joint_pos[i], 2*M_PI);
+    if (joint_pos[i] > 0) {
+      joint_pos[i] = M_PI - joint_pos[i];
+    } else {
+      joint_pos[i] = -M_PI - joint_pos[i];
+    }
+  }
   this->joint_vel = msg->velocity;
    std::cout << "Received joint positions: ";
    for (size_t i = 0; i < this->joint_pos.size(); i++)  {
