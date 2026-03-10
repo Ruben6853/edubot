@@ -20,6 +20,7 @@ include_directories($<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>)
 
 add_executable(pos_traj
         src/pos_traj.cpp
+        src/kinematics.cpp
 )
 ament_target_dependencies(pos_traj
         rclcpp

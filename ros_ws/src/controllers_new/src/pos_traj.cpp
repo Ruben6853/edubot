@@ -3,7 +3,20 @@
 constexpr double DEG2RAD = M_PI / 180.0;
 
 Controller::Controller() :
-  rclcpp::Node("traj_ctrl")
+  rclcpp::Node("traj_ctrl"), robot({
+    KMLINK("base", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, M_PI),
+    KMLINK("shoulder_base", 0.0f, -0.0452f, 0.0165f, 0.0f, 0.0f, 0.0f),
+    KMREV("shoulder_yaw", -2.0f, 2.0f),
+    KMLINK("shoulder_link", 0.0f, -0.0306f, 0.1025f, 0.0f, -M_PI/2, 0.0f),
+    KMREV("shoulder_pitch", -M_PI/2, M_PI/2),
+    KMLINK("upper_arm", 0.11257f, -0.028f, 0.0f, 0.0f, 0.0f, 0.0f),
+    KMREV("elbow", -M_PI/2, M_PI/2),
+    KMLINK("lower_arm", 0.0052f, -0.1349f, 0.0f, 0.0f, 0.0f, M_PI/2),
+    KMREV("wrist_pitch", -M_PI/2, M_PI/2),
+    KMLINK("wrist_link", -0.0601f, 0.0f, 0.0f, 0.0f, -M_PI/2, 0.0f),
+    KMREV("wrist_roll", -M_PI, M_PI),
+    KMLINK("gripper_center", 0.0f, 0.0f, 0.075f, 0.0f, 0.0f, 0.0f)
+    })
 {
     using namespace std::chrono_literals;
 
@@ -37,37 +50,27 @@ Controller::Controller() :
     this->_timer = this->create_wall_timer(
       100ms, std::bind(&Controller::_timer_callback, this));
 
-    km::SequentialRobot model({
-      KMLINK("base", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, M_PI),
-      KMLINK("shoulder_base", 0.0f, -0.0452f, 0.0165f, 0.0f, 0.0f, 0.0f),
-      KMREV("shoulder_yaw", -2.0f, 2.0f),
-      KMLINK("shoulder_link", 0.0f, -0.0306f, 0.1025f, 0.0f, -M_PI/2, 0.0f),
-      KMREV("shoulder_pitch", -M_PI/2, M_PI/2),
-      KMLINK("upper_arm", 0.11257f, -0.028f, 0.0f, 0.0f, 0.0f, 0.0f),
-      KMREV("elbow", -M_PI/2, M_PI/2),
-      KMLINK("lower_arm", 0.0052f, -0.1349f, 0.0f, 0.0f, 0.0f, M_PI/2),
-      KMREV("wrist_pitch", -M_PI/2, M_PI/2),
-      KMLINK("wrist_link", -0.0601f, 0.0f, 0.0f, 0.0f, -M_PI/2, 0.0f),
-      KMREV("wrist_roll", -M_PI, M_PI),
-      KMLINK("gripper_center", 0.0f, 0.0f, 0.075f, 0.0f, 0.0f, 0.0f)
-      });
-    model.set_joint_positions({1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
-    model.forward_kinematics();
-    auto ee_pos = model.get_end_effector_position();
-      std::cout << "End effector position: [" << ee_pos.x() << ", " << ee_pos.y() << ", " << ee_pos.z() << "]" << std::endl;
+    robot.set_joint_positions(std::vector<double>{1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
+    robot.forward_kinematics();
+    auto ee_pos = robot.get_end_effector_position();
+    auto ee_att = robot.get_end_effector_rotation();
+    std::cout << "End effector position: \n"<< ee_pos << std::endl;
+    std::cout << "End effector orientation: \n " << ee_att  << std::endl;
+    auto jacobian = robot.determine_jacobian();
+    std::cout << "Jacobian:\n" << jacobian << std::endl;
 }
 
 void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
   this->joint_pos = msg->position;
   // following is a fix to wrong state published
-  for (size_t i = 0; i < msg->position.size(); i++) {
-    joint_pos[i] = std::fmod(joint_pos[i], 2*M_PI);
-    if (joint_pos[i] > 0) {
-      joint_pos[i] = M_PI - joint_pos[i];
-    } else {
-      joint_pos[i] = -M_PI - joint_pos[i];
-    }
-  }
+  // for (size_t i = 0; i < msg->position.size(); i++) {
+  //   joint_pos[i] = std::fmod(joint_pos[i], 2*M_PI);
+  //   if (joint_pos[i] > 0) {
+  //     joint_pos[i] = M_PI - joint_pos[i];
+  //   } else {
+  //     joint_pos[i] = -M_PI - joint_pos[i];
+  //   }
+  // }
   this->joint_vel = msg->velocity;
    std::cout << "Received joint positions: ";
    for (size_t i = 0; i < this->joint_pos.size(); i++)  {
@@ -86,33 +89,33 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
       joint_pos,
       home_joint_pos,
-      10.0
+      5.0
     ));
-    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-    //   this->home_joint_pos,
-    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
-    //   10.0
-    // ));
-    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-    //   std::vector<double>{0.5, 0.5, 0.5, 0.5, 0.5, 0.0},
-    //   this->home_joint_pos,
-    //   10.0
-    // ));
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
     home_joint_pos,
-      std::vector<double>{1.5, -0.4, -0.3, -1.3, 0.0, 1.5},
-      10.0
+      std::vector<double>{0.0, 0.6, -1.3, 0.7, 0.0},
+      5.0
     ));
-    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 0.0},
-    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 1.8},
-    //   3.0
-    // ));
-    // _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 1.8},
-    //   std::vector<double>{1.5, 0.0, 0.0, -1, 0.0, 0.0},
-    //   3.0
-    // ));
+    Eigen::VectorXd state(5);
+    state << 0.0, 0.6, -1.3, 0.7, 0.0;
+    double duration = 10.0;
+    int steps = 1000;
+    double dt = duration / steps;
+    Eigen::Vector<double, 6> desired_ee_displacement;
+    desired_ee_displacement << 0.0, 0.0, 0.2, 0.0, 1.0, 0.0;
+    auto desired_ee_velocity = (desired_ee_displacement / duration).eval();
+    for (int i = 0; i < steps; i++) {
+      robot.set_joint_positions(state);
+      robot.forward_kinematics();
+      auto vel = robot.required_joint_velocity(desired_ee_velocity);
+      auto next_state = (state + vel * dt).eval();
+      _traj_queue.emplace(std::make_shared<LinearJointPath>(
+        std::vector<double>(state.data(), state.data() + state.size()),
+        std::vector<double>(next_state.data(), next_state.data() + next_state.size()),
+        dt
+      ));
+      state = next_state;
+    }
   }
 }
 
@@ -132,7 +135,7 @@ void Controller::_timer_callback()
     RCLCPP_INFO(this->get_logger(), "Trajectory queue is empty, doing nothing.");
     return;
   }
-  if (dt > _traj_queue.front()->get_duration()) {
+  while (dt > _traj_queue.front()->get_duration()) {
     RCLCPP_INFO(this->get_logger(), "Trajectory finished, moving to next trajectory.");
     _beginning += rclcpp::Duration::from_seconds(_traj_queue.front()->get_duration());
     dt = (now - this->_beginning).seconds();

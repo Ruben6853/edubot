@@ -62,11 +62,13 @@ private:
     void _timer_callback();
 
     std::queue<std::shared_ptr<JointPath>> _traj_queue;
-    std::vector<double> home_joint_pos = {0, 0, 0, 0, 0, 0};
-    std::vector<double> joint_limits_high = {2, M_PI/2, M_PI/2, M_PI/2, M_PI, 2};
-    std::vector<double> joint_limits_low = {-2, -M_PI/2, -M_PI/2, -M_PI/2, -M_PI, -0.2};
+    std::vector<double> home_joint_pos = {0, 0, 0, 0, 0};
+    std::vector<double> joint_limits_high = {2, M_PI/2, M_PI/2, M_PI/2, M_PI};
+    std::vector<double> joint_limits_low = {-2, -M_PI/2, -M_PI/2, -M_PI/2, -M_PI};
     std::vector<double> joint_pos;
     std::vector<double> joint_vel;
+
+    km::SequentialRobot robot;
 public:
     Controller();
 };

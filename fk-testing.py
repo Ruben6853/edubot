@@ -142,9 +142,13 @@ def ee_pos(state):
     transforms = propagate_transform(frames, actuators, state)
     return transforms['gripper_center']['world'][:3, 3]
 
+def ee_att(state):
+    transforms = propagate_transform(frames, actuators, state)
+    return tf.Rotation.from_matrix(transforms['gripper_center']['world'][:3, :3]).as_euler('xyz')
+
 def ik_vel_test():
-    target_velocity = np.array([0.0, 0.0, 0.2, 0.0, 0.0, 0.0])
-    state = np.array([0.0, 0.6, -1.3, 0.7-1.5, 0.0])
+    target_velocity = np.array([0.0, -0.2, 0.2, 0.0, 0.0, 0.0])
+    state = np.array([0.0, 0.6, -1.3, 0.7, 0.0])
     print(ee_pos(state))
     plot_state(state)
     total_time = 1.0
@@ -175,13 +179,16 @@ def ik_vel_test_dont_care_orient():
 
 def fk_test():
     state = np.array([1.0, 0.0, -1.0, 0.0, 0.0])
+
     print(ee_pos(state))
+    print(ee_att(state))
+    jac = create_jacobian(frames, actuators, state)
     plot_state(state)
 
 if __name__ == '__main__':
     # plot_state([0.0, 0.6, -1.3, 0.7, 0.0])
     # plot_workspace(actuators)
-    # ik_vel_test()
+    ik_vel_test()
     # ik_vel_test_dont_care_orient()
-    fk_test()
+    # fk_test()
     pass

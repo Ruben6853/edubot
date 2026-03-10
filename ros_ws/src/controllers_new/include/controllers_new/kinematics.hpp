@@ -3,6 +3,8 @@
 //
 #pragma once
 
+#include <iostream>
+#include <memory>
 #include <Eigen/Eigen>
 #include <utility>
 
@@ -14,7 +16,7 @@ namespace km {
         const Eigen::AngleAxisd z_rot(euler_angles[2], Eigen::Vector3d::UnitZ());
 
         const Eigen::Quaternion<double> quat = z_rot * y_rot * x_rot;
-        return quat.matrix();
+        return quat.toRotationMatrix();
     }
 
     inline Eigen::Transform<double, 3, Eigen::Isometry> create_transform(const Eigen::Vector3d& translation, const Eigen::Vector3d& rotation) {
@@ -87,6 +89,7 @@ namespace km {
         [[nodiscard]] double get_joint_position() const {
             return position;
         }
+        [[nodiscard]] virtual std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const = 0;
     };
 
     class Revolute: public Joint {
@@ -99,6 +102,7 @@ namespace km {
             transform.linear() = rot.toRotationMatrix();
             return transform;
         }
+        [[nodiscard]] std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const override;
     };
 
 #define KMREV(name, lim_low, lim_high) \
@@ -109,6 +113,11 @@ namespace km {
     class SequentialRobot {
         std::vector<std::shared_ptr<RobotPart>> parts;
         std::vector<std::shared_ptr<Joint>> joints;
+    public:
+        [[nodiscard]] Eigen::MatrixXd determine_jacobian() const;
+        static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian);
+        static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
+        static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::Vector<double, 6>& desired_ee_velocity);
     public:
         SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts) : parts(std::move(parts)) {
             for (const auto& part : this->parts) {
@@ -125,13 +134,17 @@ namespace km {
                 joints[i]->set_joint_position(positions[i]);
             }
         }
-        void forward_kinematics() {
-            Eigen::Transform<double, 3, Eigen::Isometry> current_transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
-            for (const auto& part : parts) {
-                current_transform = current_transform * part->get_transform();
-                part->world_transform = current_transform; // Cache the world transform in the part
+        void set_joint_positions(const Eigen::VectorXd& positions) {
+            if (positions.size() != joints.size()) {
+                throw std::invalid_argument("Position vector size does not match number of joints.");
+            }
+            for (size_t i = 0; i < joints.size(); i++) {
+                joints[i]->set_joint_position(positions[i]);
             }
         }
+
+        void forward_kinematics();
+
         [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const {
             if (parts.empty()) {
                 throw std::runtime_error("Robot has no parts.");
@@ -141,8 +154,9 @@ namespace km {
         [[nodiscard]] Eigen::Vector3d get_end_effector_position() const {
             return get_end_effector_transform().translation();
         }
-         [[nodiscard]] Eigen::Matrix3d get_end_effector_rotation() const {
-            return get_end_effector_transform().linear();
-         }
+        [[nodiscard]] auto get_end_effector_rotation() const {
+            return get_end_effector_transform().linear().eulerAngles(2, 1, 0);
+        }
+        Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity);
     };
 };
