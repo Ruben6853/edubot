@@ -4,6 +4,36 @@
 
 #include "kinematics.hpp"
 
+void km::Joint::set_position(double position) {
+    #if KM_ENFORCE_JOINT_LIMITS == 1
+        // Strictly enforce limits by throwing an exception if out of range
+        if (position < lim_low || position > lim_high) {
+            std::ostringstream oss;
+            oss << "Joint '" << get_name() << "' position " << position
+                << " out of limits [" << lim_low << ", " << lim_high << "].";
+            throw std::out_of_range(oss.str());
+        }
+    #elif KM_ENFORCE_JOINT_LIMITS == 2
+        // Clamp the position to the limits and print a warning
+        if (position <= lim_low) {
+            std::cerr << "Warning: Joint '" << get_name() << "' position " << position
+                      << " below lower limit " << lim_low << ". Clamping to limit." << std::endl;
+            position = lim_low;
+        } else if (position >= lim_high) {
+            std::cerr << "Warning: Joint '" << get_name() << "' position " << position
+                      << " above upper limit " << lim_high << ". Clamping to limit." << std::endl;
+            position = lim_high;
+        }
+    #endif
+        this->position = position;
+}
+
+void km::Joint::set_random_position() {
+    static thread_local std::mt19937 rng(std::random_device{}());
+    static thread_local std::uniform_real_distribution<double> dist(lim_low, lim_high);
+    set_position(dist(rng));
+}
+
 std::pair<Eigen::Vector3d, Eigen::Vector3d> km::Revolute::get_jacobian_col(const Eigen::Vector3d &ee_pos) const {
     Eigen::Vector3d joint_pos = world_transform.translation();
     Eigen::Vector3d rot_axis = world_transform.linear() * axis;
@@ -39,6 +69,12 @@ Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::
 }
 
 
+void km::SequentialRobot::set_random_joint_positions() {
+    for (const auto& joint : joints) {
+        joint->set_random_position();
+    }
+}
+
 void km::SequentialRobot::forward_kinematics() {
     Eigen::Transform<double, 3, Eigen::Isometry> current_transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
     for (const auto& part : parts) {
@@ -50,6 +86,18 @@ void km::SequentialRobot::forward_kinematics() {
 Eigen::VectorXd km::SequentialRobot::required_joint_velocity(const Eigen::Vector<double, 6> &desired_ee_velocity) {
     Eigen::MatrixXd jacobian = determine_jacobian();
     return solve_for_joint_velocities_qr(jacobian, desired_ee_velocity);
+}
+
+Eigen::VectorXd km::SequentialRobot::required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose) {
+    // random start state
+    set_random_joint_positions();
+    auto joint_angles = get_joint_positions();
+    double learning_rate = 0.01;
+    for (int iter = 0; iter < 1000; iter++) {
+        set_joint_positions(joint_angles);
+        forward_kinematics();
+        Eigen::Vector3d ee_pos = get_end_effector_position();
+    }
 }
 
 Eigen::MatrixXd km::SequentialRobot::determine_jacobian() const {

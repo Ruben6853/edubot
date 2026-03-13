@@ -7,6 +7,9 @@
 #include <memory>
 #include <Eigen/Eigen>
 #include <utility>
+#include <random>
+
+#define KM_ENFORCE_JOINT_LIMITS 1 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
 
 
 namespace km {
@@ -77,19 +80,13 @@ namespace km {
     public:
         Joint(std::string name, double lim_low, double lim_high) : RobotPart(std::move(name)),
         lim_low(lim_low), lim_high(lim_high) {}
-        void set_joint_position(double position) {
-            if (position < lim_low || position > lim_high) {
-                std::ostringstream oss;
-                oss << "Joint '" << get_name() << "' position " << position
-                    << " out of limits [" << lim_low << ", " << lim_high << "].";
-                throw std::out_of_range(oss.str());
-            }
-            this->position = position;
-        }
-        [[nodiscard]] double get_joint_position() const {
+        void set_position(double position);
+        [[nodiscard]] double get_position() const {
             return position;
         }
         [[nodiscard]] virtual std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const = 0;
+
+        void set_random_position();
     };
 
     class Revolute: public Joint {
@@ -131,7 +128,7 @@ namespace km {
                 throw std::invalid_argument("Position vector size does not match number of joints.");
             }
             for (size_t i = 0; i < joints.size(); i++) {
-                joints[i]->set_joint_position(positions[i]);
+                joints[i]->set_position(positions[i]);
             }
         }
         void set_joint_positions(const Eigen::VectorXd& positions) {
@@ -139,9 +136,18 @@ namespace km {
                 throw std::invalid_argument("Position vector size does not match number of joints.");
             }
             for (size_t i = 0; i < joints.size(); i++) {
-                joints[i]->set_joint_position(positions[i]);
+                joints[i]->set_position(positions[i]);
             }
         }
+        [[nodiscard]] Eigen::VectorXd get_joint_positions() const {
+            Eigen::VectorXd positions(joints.size());
+            for (Eigen::Index i = 0; i < positions.size(); i++) {
+                positions[i] = joints[i]->get_position();
+            }
+            return positions;
+        }
+
+        void set_random_joint_positions();
 
         void forward_kinematics();
 
@@ -157,6 +163,13 @@ namespace km {
         [[nodiscard]] auto get_end_effector_rotation() const {
             return get_end_effector_transform().linear().eulerAngles(2, 1, 0);
         }
+        [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_pose() const {
+            Eigen::Vector<double, 6> pose;
+            pose.head<3>() = get_end_effector_position();
+            pose.tail<3>() = get_end_effector_rotation();
+            return pose;
+        }
         Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity);
+        Eigen::VectorXd required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose);
     };
 };
