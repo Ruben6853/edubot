@@ -48,7 +48,7 @@ Controller::Controller() :
       "joint_states", qos_joint_state_sub, std::bind(&Controller::_joint_state_callback, this, std::placeholders::_1));
 
     this->_timer = this->create_wall_timer(
-      100ms, std::bind(&Controller::_timer_callback, this));
+      5ms, std::bind(&Controller::_timer_callback, this));
 
     // robot.set_joint_positions(std::vector<double>{1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
     // auto ee_pos = robot.get_end_effector_position();
@@ -92,7 +92,7 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     ));
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
     home_joint_pos,
-      std::vector<double>{1.1, 0.13, -0.5, -0.35, 0.0},
+      std::vector<double>{0.7, 0.13, -0.5, -0.35, 0.0},
       10.0
     ));
     Eigen::Vector<double, 5> home_state;
@@ -100,32 +100,38 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     robot.set_joint_positions(home_state);
     std::cout << "Home end effector position: \n" << robot.get_end_effector_pose() << std::endl;
     Eigen::Vector<double, 5> state;
-    state << 1.1, 0.13, -0.5, -0.35, 0.0;
+    state << 0.7, 0.13, -0.5, -0.35, 0.0;
     robot.set_joint_positions(state);
     std::cout << "Initial end effector position: \n" << robot.get_end_effector_pose() << std::endl;
-    double duration = 10.0;
+    double duration = 7.0;
     int steps = 1000;
     double dt = duration / steps;
-    Eigen::Vector<double, 3> desired_ee_displacement;
-    desired_ee_displacement << 0.48, 0.0, 0.0;
-    std::cout << "Desired end effector displacement: \n" << desired_ee_displacement << std::endl;
-    auto desired_ee_velocity = (desired_ee_displacement / duration).eval();
-    for (int i = 0; i < steps; i++) {
-      try {
-        robot.set_joint_positions(state);
-        state = robot.get_joint_positions();
-      } catch (const std::out_of_range& e) {
-        RCLCPP_ERROR(this->get_logger(), "Joint position out of range: %s", e.what());
-        break;
+    std::vector<Eigen::Vector3d> ee_displacements;
+    ee_displacements.emplace_back(0.2, 0.0, 0.0);
+    ee_displacements.emplace_back(0.0, 0.0, 0.2);
+    ee_displacements.emplace_back(-0.2, 0.0, 0.0);
+    ee_displacements.emplace_back(0.0, 0.0, -0.2);
+    for (const auto& disp : ee_displacements) {
+      auto desired_ee_displacement = disp;
+      std::cout << "Desired end effector displacement: \n" << desired_ee_displacement << std::endl;
+      auto desired_ee_velocity = (desired_ee_displacement / duration).eval();
+      for (int i = 0; i < steps; i++) {
+        try {
+          robot.set_joint_positions(state);
+          state = robot.get_joint_positions();
+        } catch (const std::out_of_range& e) {
+          RCLCPP_ERROR(this->get_logger(), "Joint position out of range: %s", e.what());
+          break;
+        }
+        auto vel = robot.required_joint_velocity_only_position(desired_ee_velocity);
+        auto next_state = (state + vel * dt).eval();
+        _traj_queue.emplace(std::make_shared<LinearJointPath>(
+          std::vector<double>(state.data(), state.data() + state.size()),
+          std::vector<double>(next_state.data(), next_state.data() + next_state.size()),
+          dt
+        ));
+        state = next_state;
       }
-      auto vel = robot.required_joint_velocity_only_position(desired_ee_velocity);
-      auto next_state = (state + vel * dt).eval();
-      _traj_queue.emplace(std::make_shared<LinearJointPath>(
-        std::vector<double>(state.data(), state.data() + state.size()),
-        std::vector<double>(next_state.data(), next_state.data() + next_state.size()),
-        dt
-      ));
-      state = next_state;
     }
     robot.set_joint_positions(state);
       std::cout << "Final end effector position: \n" << robot.get_end_effector_pose() << std::endl;
