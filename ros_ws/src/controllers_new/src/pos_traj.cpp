@@ -86,24 +86,28 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     first_state_received = true;
     _beginning = this->now();
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-      joint_pos,
       home_joint_pos,
-      5.0
+      home_joint_pos,
+      10.0
     ));
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
     home_joint_pos,
-      std::vector<double>{0.0, 0.6, -1.3, 0.7, 0.0},
-      5.0
+      std::vector<double>{1.1, 0.13, -0.5, -0.35, 0.0},
+      10.0
     ));
+    Eigen::Vector<double, 5> home_state;
+    home_state << home_joint_pos[0], home_joint_pos[1], home_joint_pos[2], home_joint_pos[3], home_joint_pos[4];
+    robot.set_joint_positions(home_state);
+    std::cout << "Home end effector position: \n" << robot.get_end_effector_pose() << std::endl;
     Eigen::Vector<double, 5> state;
-    state << 0.0, 0.6, -1.3, 0.7, 0.0;
+    state << 1.1, 0.13, -0.5, -0.35, 0.0;
     robot.set_joint_positions(state);
     std::cout << "Initial end effector position: \n" << robot.get_end_effector_pose() << std::endl;
     double duration = 10.0;
     int steps = 1000;
     double dt = duration / steps;
-    Eigen::Vector<double, 6> desired_ee_displacement;
-    desired_ee_displacement << 0.0, 0.0, 0.0, -1.0, 0.0, 0.0;
+    Eigen::Vector<double, 3> desired_ee_displacement;
+    desired_ee_displacement << 0.48, 0.0, 0.0;
     std::cout << "Desired end effector displacement: \n" << desired_ee_displacement << std::endl;
     auto desired_ee_velocity = (desired_ee_displacement / duration).eval();
     for (int i = 0; i < steps; i++) {
@@ -114,7 +118,7 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
         RCLCPP_ERROR(this->get_logger(), "Joint position out of range: %s", e.what());
         break;
       }
-      auto vel = robot.required_joint_velocity(desired_ee_velocity);
+      auto vel = robot.required_joint_velocity_only_position(desired_ee_velocity);
       auto next_state = (state + vel * dt).eval();
       _traj_queue.emplace(std::make_shared<LinearJointPath>(
         std::vector<double>(state.data(), state.data() + state.size()),
@@ -150,6 +154,10 @@ void Controller::_timer_callback()
     dt = (now - this->_beginning).seconds();
     _traj_queue.pop();
     // return;
+    if (_traj_queue.empty()) {
+      RCLCPP_INFO(this->get_logger(), "Trajectory queue is empty after popping, doing nothing.");
+      return;
+    }
   }
 
   auto& traj = _traj_queue.front();

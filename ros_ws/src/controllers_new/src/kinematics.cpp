@@ -62,7 +62,7 @@ Eigen::MatrixXd km::SequentialRobot::invert_jacobian_qr(const Eigen::MatrixXd &j
 }
 
 Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::MatrixXd &jacobian,
-    const Eigen::Vector<double, 6> &desired_ee_velocity) {
+                                                                   const Eigen::VectorXd &desired_ee_velocity) {
     // Solve J * q_dot = v for q_dot using QR decomposition
     // return jacobian.colPivHouseholderQr().solve(desired_ee_velocity);
     return jacobian.completeOrthogonalDecomposition().solve(desired_ee_velocity);
@@ -124,8 +124,22 @@ void km::SequentialRobot::forward_velocity() {
     }
 }
 
+Eigen::Vector3d km::SequentialRobot::get_end_effector_rotation() const {
+    auto mat = get_end_effector_transform().linear().transpose();
+    auto out = mat.eulerAngles(0, 1, 2);
+    return (-out).eval();
+}
+
 Eigen::VectorXd km::SequentialRobot::required_joint_velocity(const Eigen::Vector<double, 6> &desired_ee_velocity) {
     return solve_for_joint_velocities_qr(jacobian, desired_ee_velocity);
+}
+
+Eigen::VectorXd km::SequentialRobot::required_joint_velocity_only_position(const Eigen::Vector3d &desired_ee_velocity) {
+    return solve_for_joint_velocities_qr(jacobian.topRows<3>(), desired_ee_velocity);
+}
+
+Eigen::VectorXd km::SequentialRobot::required_joint_velocity_only_rotation(const Eigen::Vector3d &desired_ee_velocity) {
+    return solve_for_joint_velocities_qr(jacobian.bottomRows<3>(), desired_ee_velocity);
 }
 
 Eigen::VectorXd km::SequentialRobot::required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose) {
@@ -135,8 +149,6 @@ Eigen::VectorXd km::SequentialRobot::required_joint_angles(const Eigen::Vector<d
     double learning_rate = 0.01;
     for (int iter = 0; iter < 1000; iter++) {
         set_joint_positions(joint_angles);
-        forward_kinematics();
-        Eigen::Vector3d ee_pos = get_end_effector_position();
     }
 }
 

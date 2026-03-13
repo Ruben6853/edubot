@@ -9,7 +9,7 @@
 #include <utility>
 #include <random>
 
-#define KM_ENFORCE_JOINT_LIMITS 1 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
+#define KM_ENFORCE_JOINT_LIMITS 0 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
 
 
 namespace km {
@@ -115,7 +115,7 @@ namespace km {
         void forward_velocity();
         static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian);
         static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
-        static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::Vector<double, 6>& desired_ee_velocity);
+        static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity);
     public:
         SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts) : parts(std::move(parts)) {
             for (const auto& part : this->parts) {
@@ -142,9 +142,7 @@ namespace km {
         [[nodiscard]] Eigen::Vector3d get_end_effector_position() const {
             return get_end_effector_transform().translation();
         }
-        [[nodiscard]] auto get_end_effector_rotation() const {
-            return get_end_effector_transform().linear().eulerAngles(2, 1, 0);
-        }
+        [[nodiscard]] Eigen::Vector3d get_end_effector_rotation() const;
         [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_pose() const {
             Eigen::Vector<double, 6> pose;
             pose.head<3>() = get_end_effector_position();
@@ -152,6 +150,8 @@ namespace km {
             return pose;
         }
         Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity);
+        Eigen::VectorXd required_joint_velocity_only_position(const Eigen::Vector3d& desired_ee_velocity);
+        Eigen::VectorXd required_joint_velocity_only_rotation(const Eigen::Vector3d& desired_ee_velocity);
         Eigen::VectorXd required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose);
     };
 };
