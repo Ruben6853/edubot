@@ -68,11 +68,42 @@ Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::
     return jacobian.completeOrthogonalDecomposition().solve(desired_ee_velocity);
 }
 
+void km::SequentialRobot::set_joint_positions(const std::vector<double> &positions) {
+    if (positions.size() != joints.size()) {
+        throw std::invalid_argument("Position vector size does not match number of joints.");
+    }
+    for (size_t i = 0; i < joints.size(); i++) {
+        joints[i]->set_position(positions[i]);
+    }
+    forward_kinematics();
+    forward_velocity();
+}
+
+void km::SequentialRobot::set_joint_positions(const Eigen::VectorXd &positions) {
+    if (positions.size() != joints.size()) {
+        throw std::invalid_argument("Position vector size does not match number of joints.");
+    }
+    for (size_t i = 0; i < joints.size(); i++) {
+        joints[i]->set_position(positions[i]);
+    }
+    forward_kinematics();
+    forward_velocity();
+}
 
 void km::SequentialRobot::set_random_joint_positions() {
     for (const auto& joint : joints) {
         joint->set_random_position();
     }
+    forward_kinematics();
+    forward_velocity();
+}
+
+Eigen::VectorXd km::SequentialRobot::get_joint_positions() const {
+    Eigen::VectorXd positions(joints.size());
+    for (Eigen::Index i = 0; i < positions.size(); i++) {
+        positions[i] = joints[i]->get_position();
+    }
+    return positions;
 }
 
 void km::SequentialRobot::forward_kinematics() {
@@ -83,8 +114,17 @@ void km::SequentialRobot::forward_kinematics() {
     }
 }
 
+void km::SequentialRobot::forward_velocity() {
+    auto num_joints = static_cast<Eigen::Index>(joints.size());
+    Eigen::Vector3d end_effector_pos = get_end_effector_position();
+    for (Eigen::Index i = 0; i < num_joints; i++) {
+        auto [linear_part, angular_part] = joints[i]->get_jacobian_col(end_effector_pos);
+        jacobian.block<3, 1>(0, i) = linear_part;
+        jacobian.block<3, 1>(3, i) = angular_part;
+    }
+}
+
 Eigen::VectorXd km::SequentialRobot::required_joint_velocity(const Eigen::Vector<double, 6> &desired_ee_velocity) {
-    Eigen::MatrixXd jacobian = determine_jacobian();
     return solve_for_joint_velocities_qr(jacobian, desired_ee_velocity);
 }
 
@@ -100,16 +140,5 @@ Eigen::VectorXd km::SequentialRobot::required_joint_angles(const Eigen::Vector<d
     }
 }
 
-Eigen::MatrixXd km::SequentialRobot::determine_jacobian() const {
-    Eigen::Index num_joints = joints.size();
-    Eigen::MatrixXd jacobian(6, num_joints);
-    Eigen::Vector3d end_effector_pos = get_end_effector_position();
-    for (Eigen::Index i = 0; i < num_joints; i++) {
-        auto [linear_part, angular_part] = joints[i]->get_jacobian_col(end_effector_pos);
-        jacobian.block<3, 1>(0, i) = linear_part;
-        jacobian.block<3, 1>(3, i) = angular_part;
-    }
-    return jacobian;
-}
 
 

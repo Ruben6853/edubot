@@ -110,8 +110,9 @@ namespace km {
     class SequentialRobot {
         std::vector<std::shared_ptr<RobotPart>> parts;
         std::vector<std::shared_ptr<Joint>> joints;
-    public:
-        [[nodiscard]] Eigen::MatrixXd determine_jacobian() const;
+        Eigen::MatrixXd jacobian;
+        void forward_kinematics();
+        void forward_velocity();
         static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian);
         static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
         static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::Vector<double, 6>& desired_ee_velocity);
@@ -122,34 +123,15 @@ namespace km {
                     joints.push_back(joint);
                 }
             }
+            jacobian.resize(6, joints.size());
+            forward_kinematics();
+            forward_velocity();
         }
-        void set_joint_positions(const std::vector<double>& positions) {
-            if (positions.size() != joints.size()) {
-                throw std::invalid_argument("Position vector size does not match number of joints.");
-            }
-            for (size_t i = 0; i < joints.size(); i++) {
-                joints[i]->set_position(positions[i]);
-            }
-        }
-        void set_joint_positions(const Eigen::VectorXd& positions) {
-            if (positions.size() != joints.size()) {
-                throw std::invalid_argument("Position vector size does not match number of joints.");
-            }
-            for (size_t i = 0; i < joints.size(); i++) {
-                joints[i]->set_position(positions[i]);
-            }
-        }
-        [[nodiscard]] Eigen::VectorXd get_joint_positions() const {
-            Eigen::VectorXd positions(joints.size());
-            for (Eigen::Index i = 0; i < positions.size(); i++) {
-                positions[i] = joints[i]->get_position();
-            }
-            return positions;
-        }
-
+        void set_joint_positions(const std::vector<double>& positions);
+        void set_joint_positions(const Eigen::VectorXd& positions);
         void set_random_joint_positions();
+        [[nodiscard]] Eigen::VectorXd get_joint_positions() const;
 
-        void forward_kinematics();
 
         [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const {
             if (parts.empty()) {

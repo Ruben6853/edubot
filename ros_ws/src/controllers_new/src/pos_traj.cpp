@@ -50,8 +50,7 @@ Controller::Controller() :
     this->_timer = this->create_wall_timer(
       100ms, std::bind(&Controller::_timer_callback, this));
 
-    robot.set_joint_positions(std::vector<double>{1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
-    robot.forward_kinematics();
+    // robot.set_joint_positions(std::vector<double>{1.0f, 0.0f, -1.0f, 0.0f, 0.0f});
     // auto ee_pos = robot.get_end_effector_position();
     // auto ee_att = robot.get_end_effector_rotation();
     // std::cout << "End effector position: \n"<< ee_pos << std::endl;
@@ -99,7 +98,6 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     Eigen::Vector<double, 5> state;
     state << 0.0, 0.6, -1.3, 0.7, 0.0;
     robot.set_joint_positions(state);
-    robot.forward_kinematics();
     std::cout << "Initial end effector position: \n" << robot.get_end_effector_pose() << std::endl;
     double duration = 10.0;
     int steps = 1000;
@@ -116,7 +114,6 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
         RCLCPP_ERROR(this->get_logger(), "Joint position out of range: %s", e.what());
         break;
       }
-      robot.forward_kinematics();
       auto vel = robot.required_joint_velocity(desired_ee_velocity);
       auto next_state = (state + vel * dt).eval();
       _traj_queue.emplace(std::make_shared<LinearJointPath>(
@@ -127,7 +124,6 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
       state = next_state;
     }
     robot.set_joint_positions(state);
-      robot.forward_kinematics();
       std::cout << "Final end effector position: \n" << robot.get_end_effector_pose() << std::endl;
   }
 }
