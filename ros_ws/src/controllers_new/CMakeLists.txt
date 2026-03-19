@@ -18,6 +18,13 @@ find_package(Eigen3 REQUIRED)
 # Add include directories
 include_directories($<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>)
 
+install(DIRECTORY
+        launch
+        config
+        DESTINATION share/${PROJECT_NAME}
+)
+
+# pos controller
 add_executable(pos_traj
         src/pos_traj.cpp
         src/kinematics.cpp
@@ -33,15 +40,29 @@ target_include_directories(pos_traj PUBLIC
 )
 target_compile_features(pos_traj PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
-
-install(DIRECTORY 
-  launch
-  config
-  DESTINATION share/${PROJECT_NAME}
-)
-
 install(TARGETS pos_traj
-  DESTINATION lib/${PROJECT_NAME})
+        DESTINATION lib/${PROJECT_NAME})
+
+# vel controller
+add_executable(vel_ctrl
+        src/vel_ctrl.cpp
+        src/kinematics.cpp
+)
+ament_target_dependencies(vel_ctrl
+        rclcpp
+        trajectory_msgs
+        sensor_msgs
+)
+target_include_directories(vel_ctrl PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/controllers_new>
+        $<INSTALL_INTERFACE:include>
+)
+target_compile_features(vel_ctrl PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+install(TARGETS vel_ctrl
+        DESTINATION lib/${PROJECT_NAME})
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

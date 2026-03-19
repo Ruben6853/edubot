@@ -39,7 +39,7 @@ Controller::Controller() :
     rclcpp::QoS qos_pos_cmd_pub(rclcpp::KeepLast(1));
     qos_pos_cmd_pub.reliable();
     qos_pos_cmd_pub.durability_volatile();
-    this->_pos_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos_pos_cmd_pub);
+    this->_cmd_publisher = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("joint_cmds", qos_pos_cmd_pub);
 
     rclcpp::QoS qos_joint_state_sub(rclcpp::KeepLast(1));
     qos_joint_state_sub.best_effort();
@@ -172,7 +172,7 @@ void Controller::_timer_callback()
   msg.points = {point};
 
   // Publish
-  this->_pos_cmd_publisher->publish(msg);
+  this->_cmd_publisher->publish(msg);
 }
 
 int main(int argc, char ** argv)

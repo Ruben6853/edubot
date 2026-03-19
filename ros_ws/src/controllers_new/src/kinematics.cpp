@@ -4,6 +4,10 @@
 
 #include "kinematics.hpp"
 
+std::shared_ptr<km::RobotPart> km::Link::clone() const {
+    return std::make_shared<km::Link>(get_name(), translation, rotation);
+}
+
 void km::Joint::set_position(double position) {
     #if KM_ENFORCE_JOINT_LIMITS == 1
         // Strictly enforce limits by throwing an exception if out of range
@@ -28,6 +32,11 @@ void km::Joint::set_position(double position) {
         this->position = position;
 }
 
+void km::Joint::set_velocity(double velocity) {
+    // todo safety limits
+    this->velocity = velocity;
+}
+
 void km::Joint::set_random_position() {
     static thread_local std::mt19937 rng(std::random_device{}());
     static thread_local std::uniform_real_distribution<double> dist(lim_low, lim_high);
@@ -39,6 +48,10 @@ std::pair<Eigen::Vector3d, Eigen::Vector3d> km::Revolute::get_jacobian_col(const
     Eigen::Vector3d rot_axis = world_transform.linear() * axis;
     Eigen::Vector3d linear_part = rot_axis.cross(ee_pos - joint_pos);
     return {linear_part, rot_axis};
+}
+
+std::shared_ptr<km::RobotPart> km::Revolute::clone() const {
+    return std::make_shared<km::Revolute>(get_name(), lim_low, lim_high);
 }
 
 Eigen::MatrixXd km::SequentialRobot::invert_jacobian_svd(const Eigen::MatrixXd &jacobian) {
@@ -66,6 +79,47 @@ Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::
     // Solve J * q_dot = v for q_dot using QR decomposition
     // return jacobian.colPivHouseholderQr().solve(desired_ee_velocity);
     return jacobian.completeOrthogonalDecomposition().solve(desired_ee_velocity);
+}
+
+km::SequentialRobot::SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts)
+: parts(std::move(parts)) {
+    for (const auto& part : this->parts) {
+        if (auto joint = std::dynamic_pointer_cast<Joint>(part)) {
+            joints.push_back(joint);
+        }
+    }
+    jacobian.resize(6, joints.size());
+    forward_kinematics();
+    forward_velocity();
+}
+
+km::SequentialRobot::SequentialRobot(const SequentialRobot &other) :
+parts(km::deep_copy_vector(other.parts)) {
+    for (const auto& part : this->parts) {
+        if (auto joint = std::dynamic_pointer_cast<Joint>(part)) {
+            joints.push_back(joint);
+        }
+    }
+    jacobian.resize(6, joints.size());
+    forward_kinematics();
+    forward_velocity();
+}
+
+km::SequentialRobot km::SequentialRobot::operator=(const SequentialRobot &other) {
+    if (this == &other) {
+        return *this; // Handle self-assignment
+    }
+    parts = km::deep_copy_vector(other.parts);
+    joints.clear();
+    for (const auto& part : this->parts) {
+        if (auto joint = std::dynamic_pointer_cast<Joint>(part)) {
+            joints.push_back(joint);
+        }
+    }
+    jacobian.resize(6, joints.size());
+    forward_kinematics();
+    forward_velocity();
+    return *this;
 }
 
 void km::SequentialRobot::set_joint_positions(const std::vector<double> &positions) {
@@ -106,6 +160,32 @@ Eigen::VectorXd km::SequentialRobot::get_joint_positions() const {
     return positions;
 }
 
+void km::SequentialRobot::set_joint_velocities(const std::vector<double> &velocities) {
+    if (velocities.size() != joints.size()) {
+        throw std::invalid_argument("Velocity vector size does not match number of joints.");
+    }
+    for (size_t i = 0; i < joints.size(); i++) {
+        joints[i]->set_velocity(velocities[i]);
+    }
+}
+
+void km::SequentialRobot::set_joint_velocities(const Eigen::VectorXd &velocities) {
+    if (velocities.size() != joints.size()) {
+        throw std::invalid_argument("Velocity vector size does not match number of joints.");
+    }
+    for (size_t i = 0; i < joints.size(); i++) {
+        joints[i]->set_velocity(velocities[i]);
+    }
+}
+
+Eigen::VectorXd km::SequentialRobot::get_joint_velocities() const {
+    Eigen::VectorXd velocities(joints.size());
+    for (Eigen::Index i = 0; i < velocities.size(); i++) {
+        velocities[i] = joints[i]->get_velocity();
+    }
+    return velocities;
+}
+
 void km::SequentialRobot::forward_kinematics() {
     Eigen::Transform<double, 3, Eigen::Isometry> current_transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
     for (const auto& part : parts) {
@@ -124,10 +204,25 @@ void km::SequentialRobot::forward_velocity() {
     }
 }
 
+Eigen::Vector3d km::SequentialRobot::get_end_effector_position() const {
+    return get_end_effector_transform().translation();
+}
+
 Eigen::Vector3d km::SequentialRobot::get_end_effector_rotation() const {
     auto mat = get_end_effector_transform().linear().transpose();
     auto out = mat.eulerAngles(0, 1, 2);
     return (-out).eval();
+}
+
+Eigen::Vector<double, 6> km::SequentialRobot::get_end_effector_pose() const {
+    Eigen::Vector<double, 6> pose;
+    pose.head<3>() = get_end_effector_position();
+    pose.tail<3>() = get_end_effector_rotation();
+    return pose;
+}
+
+Eigen::Vector<double, 6> km::SequentialRobot::get_end_effector_velocity() const {
+    return (jacobian * get_joint_velocities()).eval();
 }
 
 Eigen::VectorXd km::SequentialRobot::required_joint_velocity(const Eigen::Vector<double, 6> &desired_ee_velocity) {

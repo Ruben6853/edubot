@@ -30,6 +30,16 @@ namespace km {
         return transform;
     }
 
+    template<typename T>
+    inline std::vector<std::shared_ptr<T>> deep_copy_vector(const std::vector<std::shared_ptr<T>>& vec) {
+        std::vector<std::shared_ptr<T>> copy;
+        copy.reserve(vec.size());
+        for (const auto& item : vec) {
+            copy.push_back(std::dynamic_pointer_cast<T>(item->clone()));
+        }
+        return copy;
+    }
+
     /**
      * Base class for all robot parts.
      * This class hierarchy allows polymorphism in the final robot class.
@@ -43,6 +53,7 @@ namespace km {
         virtual ~RobotPart() = default;
         [[nodiscard]] virtual Eigen::Transform<double, 3, Eigen::Isometry> get_transform() const = 0;
         [[nodiscard]] std::string get_name() const { return name; }
+        [[nodiscard]] virtual std::shared_ptr<RobotPart> clone() const = 0;
     };
 
     /**
@@ -60,6 +71,7 @@ namespace km {
         [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_transform() const override {
             return transform;
         }
+        [[nodiscard]] virtual std::shared_ptr<RobotPart> clone() const override;
     };
 
 // for convenience
@@ -77,13 +89,14 @@ namespace km {
         double lim_low;
         double lim_high;
         double position = 0.0;
+        double velocity = 0.0; // to store the full state in a robot object
     public:
         Joint(std::string name, double lim_low, double lim_high) : RobotPart(std::move(name)),
         lim_low(lim_low), lim_high(lim_high) {}
         void set_position(double position);
-        [[nodiscard]] double get_position() const {
-            return position;
-        }
+        [[nodiscard]] double get_position() const {return position; }
+        void set_velocity(double velocity);
+        [[nodiscard]] double get_velocity() const { return velocity; }
         [[nodiscard]] virtual std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const = 0;
 
         void set_random_position();
@@ -100,6 +113,7 @@ namespace km {
             return transform;
         }
         [[nodiscard]] std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const override;
+        [[nodiscard]] std::shared_ptr<RobotPart> clone() const override;
     };
 
 #define KMREV(name, lim_low, lim_high) \
@@ -117,21 +131,17 @@ namespace km {
         static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
         static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity);
     public:
-        SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts) : parts(std::move(parts)) {
-            for (const auto& part : this->parts) {
-                if (auto joint = std::dynamic_pointer_cast<Joint>(part)) {
-                    joints.push_back(joint);
-                }
-            }
-            jacobian.resize(6, joints.size());
-            forward_kinematics();
-            forward_velocity();
-        }
+        SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts);
+        SequentialRobot(const SequentialRobot& other);
+        SequentialRobot operator=(const SequentialRobot& other);
         void set_joint_positions(const std::vector<double>& positions);
         void set_joint_positions(const Eigen::VectorXd& positions);
         void set_random_joint_positions();
         [[nodiscard]] Eigen::VectorXd get_joint_positions() const;
 
+        void set_joint_velocities(const std::vector<double>& velocities);
+        void set_joint_velocities(const Eigen::VectorXd& velocities);
+        [[nodiscard]] Eigen::VectorXd get_joint_velocities() const;
 
         [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const {
             if (parts.empty()) {
@@ -139,19 +149,13 @@ namespace km {
             }
             return parts.back()->world_transform;
         }
-        [[nodiscard]] Eigen::Vector3d get_end_effector_position() const {
-            return get_end_effector_transform().translation();
-        }
+        [[nodiscard]] Eigen::Vector3d get_end_effector_position() const;
         [[nodiscard]] Eigen::Vector3d get_end_effector_rotation() const;
-        [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_pose() const {
-            Eigen::Vector<double, 6> pose;
-            pose.head<3>() = get_end_effector_position();
-            pose.tail<3>() = get_end_effector_rotation();
-            return pose;
-        }
-        Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity);
+        [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_pose() const;
+        [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_velocity() const;
+        Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity); // inverse velocity
         Eigen::VectorXd required_joint_velocity_only_position(const Eigen::Vector3d& desired_ee_velocity);
         Eigen::VectorXd required_joint_velocity_only_rotation(const Eigen::Vector3d& desired_ee_velocity);
-        Eigen::VectorXd required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose);
+        Eigen::VectorXd required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose); // todo inverse kinematics
     };
 };

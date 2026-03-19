@@ -61,14 +61,12 @@ private:
     rclcpp::Time _beginning;
     void _timer_callback();
 
-    std::queue<std::shared_ptr<JointPath>> _traj_queue;
-    std::vector<double> home_joint_pos = {0, 0, 0, 0, 0};
-    std::vector<double> joint_limits_high = {2, M_PI/2, M_PI/2, M_PI/2, M_PI};
-    std::vector<double> joint_limits_low = {-2, -M_PI/2, -M_PI/2, -M_PI/2, -M_PI};
-    std::vector<double> joint_pos;
-    std::vector<double> joint_vel;
+    Eigen::Vector<double, 5> home_joint_pos = {0, 0, 0, 0, 0};
 
-    km::SequentialRobot robot;
+    km::SequentialRobot robot; // represents the real robot
+    km::SequentialRobot dummy; // used to run simulations
+    double gripper_pos;
+    double gripper_vel;
 public:
     Controller();
 };
