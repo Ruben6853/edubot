@@ -86,16 +86,16 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
     gripper_pos = joint_pos[5];
     gripper_vel = joint_vel[5];
 
-     // std::cout << "Received joint positions: ";
-     // for (size_t i = 0; i < joint_pos.size(); i++)  {
-     //     std::cout << "Joint " << i << ": " << joint_pos[i] << " ";
-     // }
-     // std::cout << std::endl;
-     // std::cout << "Received joint velocities: ";
-     // for (size_t i = 0; i < joint_vel.size(); i++)  {
-     //     std::cout << "Joint " << i << ": " << joint_vel[i] << " ";
-     // }
-     // std::cout << std::endl;
+     std::cout << "Received joint positions: ";
+     for (size_t i = 0; i < joint_pos.size(); i++)  {
+         std::cout << "Joint " << i << ": " << joint_pos[i] << " ";
+     }
+     std::cout << std::endl;
+     std::cout << "Received joint velocities: ";
+     for (size_t i = 0; i < joint_vel.size(); i++)  {
+         std::cout << "Joint " << i << ": " << joint_vel[i] << " ";
+     }
+     std::cout << std::endl;
     if (!first_state_received) {
         RCLCPP_INFO(this->get_logger(), "First joint state received, starting trajectory execution.");
         first_state_received = true;

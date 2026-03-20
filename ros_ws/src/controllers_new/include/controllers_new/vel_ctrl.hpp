@@ -64,8 +64,6 @@ private:
     rclcpp::Time _beginning;
     void _timer_callback();
 
-    Eigen::Vector<double, 5> home_joint_pos = {0, 0, 0, 0, 0};
-
     km::SequentialRobot robot; // represents the real robot
     km::SequentialRobot dummy; // used to run simulations
     double gripper_pos;
