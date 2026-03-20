@@ -51,6 +51,9 @@ public:
 class Controller : public rclcpp::Node
 {
 private:
+    [[nodiscard]] trajectory_msgs::msg::JointTrajectory create_msg(const Eigen::Vector<double, 5>& joint_vel, double gripper_vel);
+    void publish(const Eigen::Vector<double, 5>& joint_vel, double gripper_vel);
+
     rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr _cmd_publisher;
 
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr _joint_state_subscriber;

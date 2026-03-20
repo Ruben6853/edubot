@@ -45,6 +45,24 @@ Controller::Controller() :
     // std::cout << "Jacobian:\n" << jacobian << std::endl;
 }
 
+trajectory_msgs::msg::JointTrajectory Controller::create_msg(const Eigen::Vector<double, 5> &joint_vel,
+    double gripper_vel) {
+    auto now = this->now();
+    auto msg = trajectory_msgs::msg::JointTrajectory();
+    msg.header.stamp = now;
+    auto vel = km::vector_to_std(joint_vel);
+    vel.emplace_back(gripper_vel);
+    auto point = trajectory_msgs::msg::JointTrajectoryPoint();
+    point.velocities = vel;
+    msg.points = {point};
+    return msg;
+}
+
+void Controller::publish(const Eigen::Vector<double, 5> &joint_vel, double gripper_vel) {
+    auto msg = create_msg(joint_vel, gripper_vel);
+    this->_cmd_publisher->publish(msg);
+}
+
 void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
     auto& joint_pos = msg->position;
     auto& joint_vel = msg->velocity;
@@ -86,22 +104,17 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
 }
 
 void Controller::_timer_callback() {
-    // if (!first_state_received) {
-    //     RCLCPP_INFO(this->get_logger(), "Waiting for first joint state...");
-    //     return;
-    // }
+    if (!first_state_received) {
+        RCLCPP_INFO(this->get_logger(), "Waiting for first joint state...");
+        return;
+    }
     auto now = this->now();
-    auto msg = trajectory_msgs::msg::JointTrajectory();
-    msg.header.stamp = now;
-
     double dt = (now - this->_beginning).seconds();
-    auto point = trajectory_msgs::msg::JointTrajectoryPoint();
-    point.positions = {0.1, 0.1, 0.1, 0.0, 0.0, 0.0};
-    point.velocities = {0.1, 0.1, 0.1, 0.0, 0.0, 0.0};
-    msg.points = {point};
 
-    // Publish
-    this->_cmd_publisher->publish(msg);
+    Eigen::Vector<double, 5> target_pos = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    double t = 5.0f; // duration of the trajectory
+    auto speed = ((target_pos - robot.get_joint_positions())  / t).eval();
+    publish(speed, gripper_vel);
 }
 
 int main(int argc, char ** argv)

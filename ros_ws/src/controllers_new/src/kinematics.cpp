@@ -34,6 +34,16 @@ void km::Joint::set_position(double position) {
 
 void km::Joint::set_velocity(double velocity) {
     // todo safety limits
+    if (this->position >= lim_high && velocity > 0) {
+        std::cerr << "Warning: Joint '" << get_name() << "' at upper limit " << lim_high
+                  << " with positive velocity " << velocity << ". Clamping velocity to zero." << std::endl;
+        velocity = 0.0;
+    } else if (this->position <= lim_low && velocity < 0) {
+        std::cerr << "Warning: Joint '" << get_name() << "' at lower limit " << lim_low
+                  << " with negative velocity " << velocity << ". Clamping velocity to zero." << std::endl;
+        velocity = 0.0;
+    }
+
     this->velocity = velocity;
 }
 

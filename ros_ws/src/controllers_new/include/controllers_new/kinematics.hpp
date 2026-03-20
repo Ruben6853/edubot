@@ -9,7 +9,7 @@
 #include <utility>
 #include <random>
 
-#define KM_ENFORCE_JOINT_LIMITS 0 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
+#define KM_ENFORCE_JOINT_LIMITS 2 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
 
 
 namespace km {
@@ -39,6 +39,16 @@ namespace km {
         }
         return copy;
     }
+
+    template <typename Derived>
+    inline std::vector<typename Derived::Scalar>
+    vector_to_std(const Eigen::MatrixBase<Derived>& vec) {
+        static_assert(Derived::ColsAtCompileTime == 1 || Derived::RowsAtCompileTime == 1,
+                      "vector_to_std expects a vector (Nx1 or 1xN)");
+        return std::vector<typename Derived::Scalar>(vec.derived().data(),
+                                                     vec.derived().data() + vec.size());
+    }
+
 
     /**
      * Base class for all robot parts.
