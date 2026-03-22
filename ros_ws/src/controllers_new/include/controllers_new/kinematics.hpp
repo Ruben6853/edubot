@@ -5,11 +5,12 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <Eigen/Eigen>
 #include <utility>
 #include <random>
 
-#define KM_ENFORCE_JOINT_LIMITS 2 // 0: no enforcement, 1: strict with exceptions, 2: clamp with warnings
+#define KM_ENFORCE_JOINT_LIMITS 2 // 0: no enforcement, 1: strict with exceptions, 2: clamp
 
 
 namespace km {
@@ -28,6 +29,10 @@ namespace km {
         transform.linear() = rotation_matrix;
         transform.translation() = translation;
         return transform;
+    }
+
+    inline Eigen::Transform<double, 3, Eigen::Isometry> create_transform(const Eigen::Vector<double, 6>& pose) {
+        return create_transform(pose.head<3>(), pose.tail<3>());
     }
 
     template<typename T>
@@ -140,6 +145,7 @@ namespace km {
         static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian);
         static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
         static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity);
+        static Eigen::VectorXd solve_for_joint_velocities_dls(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity, double lambda = 0.01);
     public:
         SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts);
         SequentialRobot(const SequentialRobot& other);
@@ -166,6 +172,6 @@ namespace km {
         Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity); // inverse velocity
         Eigen::VectorXd required_joint_velocity_only_position(const Eigen::Vector3d& desired_ee_velocity);
         Eigen::VectorXd required_joint_velocity_only_rotation(const Eigen::Vector3d& desired_ee_velocity);
-        Eigen::VectorXd required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose); // todo inverse kinematics
+        std::optional<Eigen::VectorXd> required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose); // todo inverse kinematics
     };
 };

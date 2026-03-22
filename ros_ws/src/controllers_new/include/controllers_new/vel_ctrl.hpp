@@ -48,6 +48,12 @@ public:
     }
 };
 
+enum class goal_type {
+    idle,
+    to_home,
+    line
+};
+
 class Controller : public rclcpp::Node
 {
 private:
@@ -68,6 +74,8 @@ private:
     km::SequentialRobot dummy; // used to run simulations
     double gripper_pos;
     double gripper_vel;
+
+    goal_type current_goal = goal_type::to_home;
 public:
     Controller();
 };

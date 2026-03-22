@@ -20,12 +20,12 @@ void km::Joint::set_position(double position) {
     #elif KM_ENFORCE_JOINT_LIMITS == 2
         // Clamp the position to the limits and print a warning
         if (position <= lim_low) {
-            std::cerr << "Warning: Joint '" << get_name() << "' position " << position
-                      << " below lower limit " << lim_low << ". Clamping to limit." << std::endl;
+            // std::cerr << "Warning: Joint '" << get_name() << "' position " << position
+            //           << " below lower limit " << lim_low << ". Clamping to limit." << std::endl;
             position = lim_low;
         } else if (position >= lim_high) {
-            std::cerr << "Warning: Joint '" << get_name() << "' position " << position
-                      << " above upper limit " << lim_high << ". Clamping to limit." << std::endl;
+            // std::cerr << "Warning: Joint '" << get_name() << "' position " << position
+            //           << " above upper limit " << lim_high << ". Clamping to limit." << std::endl;
             position = lim_high;
         }
     #endif
@@ -89,6 +89,17 @@ Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::
     // Solve J * q_dot = v for q_dot using QR decomposition
     // return jacobian.colPivHouseholderQr().solve(desired_ee_velocity);
     return jacobian.completeOrthogonalDecomposition().solve(desired_ee_velocity);
+}
+
+Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_dls(const Eigen::MatrixXd &jacobian,
+    const Eigen::VectorXd &desired_ee_velocity, double lambda) {
+    // Damped Least Squares solution: (J^T * J + lambda^2 * I) q_dot = J^T * v
+    const Eigen::MatrixXd& J = jacobian;
+    Eigen::MatrixXd JT = J.transpose();
+    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(J.cols(), J.cols());
+    Eigen::VectorXd dq =
+        (JT * J + lambda * lambda * I).ldlt().solve(JT * desired_ee_velocity);
+    return dq;
 }
 
 km::SequentialRobot::SequentialRobot(std::vector<std::shared_ptr<RobotPart>> parts)
@@ -219,9 +230,10 @@ Eigen::Vector3d km::SequentialRobot::get_end_effector_position() const {
 }
 
 Eigen::Vector3d km::SequentialRobot::get_end_effector_rotation() const {
-    auto mat = get_end_effector_transform().linear().transpose();
-    auto out = mat.eulerAngles(0, 1, 2);
-    return (-out).eval();
+    auto mat = get_end_effector_transform().linear();
+    auto out = mat.eulerAngles(2, 1, 0);
+    out = {out[2], out[1], out[0]}; // Convert from ZYX to XYZ order
+    return out;
 }
 
 Eigen::Vector<double, 6> km::SequentialRobot::get_end_effector_pose() const {
@@ -247,15 +259,42 @@ Eigen::VectorXd km::SequentialRobot::required_joint_velocity_only_rotation(const
     return solve_for_joint_velocities_qr(jacobian.bottomRows<3>(), desired_ee_velocity);
 }
 
-Eigen::VectorXd km::SequentialRobot::required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose) {
+std::optional<Eigen::VectorXd> km::SequentialRobot::required_joint_angles(
+    const Eigen::Vector<double, 6> &desired_ee_pose) {
+    auto desired_tf = create_transform(desired_ee_pose);
+    double learning_rate = 0.1f;
+    double max_step = 0.1f; // Max step size for joint updates
     // random start state
-    set_random_joint_positions();
-    auto joint_angles = get_joint_positions();
-    double learning_rate = 0.01;
-    for (int iter = 0; iter < 1000; iter++) {
-        set_joint_positions(joint_angles);
+    for (int i = 0; i < 100; i++) {
+        // Try multiple random initializations to improve chances of convergence
+        set_random_joint_positions();
+        auto joint_angles = get_joint_positions();
+        for (int iter = 0; iter < 1000; iter++) {
+            auto current_tf = get_end_effector_transform();
+            auto p_err = desired_tf.translation() - current_tf.translation();
+            const Eigen::Matrix3d R = current_tf.linear();
+            const Eigen::Matrix3d Rd = desired_tf.linear();
+            const Eigen::Matrix3d E = 0.5 * (R.transpose() * Rd - Rd.transpose() * R);
+            Eigen::Vector3d r_err(E(2, 1), E(0, 2), E(1, 0)); // vee operator
+            Eigen::Vector<double, 6> err;
+            err.head<3>() = p_err;
+            err.tail<3>() = r_err;
+            if (err.norm() < 0.07f) {
+                return joint_angles; // Converged
+            }
+            // auto vel = solve_for_joint_velocities_qr(jacobian, err);
+            auto dq = solve_for_joint_velocities_dls(jacobian, err, 0.05);
+            // Limit the step size to prevent overshooting
+            dq *= learning_rate;
+            dq = dq.cwiseMax(-max_step).cwiseMin(max_step);
+            set_joint_positions(joint_angles + dq);
+            Eigen::VectorXd real_dq = get_joint_positions() - joint_angles; // Get the actual change after applying limits
+            if (real_dq.norm() < 1e-4) {
+                break; // No significant change after applying limits, likely stuck
+            }
+            joint_angles = get_joint_positions(); // these are with limits applied
+            std::cout << "Iteration " << i << ", " << iter << ", error norm: " << err.norm() << std::endl;
+        }
     }
+    return std::nullopt; // Failed to converge
 }
-
-
-
