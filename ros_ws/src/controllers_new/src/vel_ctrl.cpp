@@ -135,14 +135,14 @@ void Controller::_timer_callback() {
 
                 break;
             }
-            double t = 1.0f; // duration of the trajectory
+            double t = 3.0f; // duration of the trajectory
             auto speed = (diff  / t).eval();
             publish(speed, gripper_vel);
             break;
         }
         case goal_type::line: {
             // Move in a line in the end effector space
-            auto desired_ee_vel = Eigen::Vector3d(0.0, -0.01, 0.01); // move to the desired position in 5 seconds
+            auto desired_ee_vel = Eigen::Vector3d(0.0, -0.02, 0.02); // move to the desired position in 5 seconds
             auto joint_vel = robot.required_joint_velocity_only_position(desired_ee_vel);
             publish(joint_vel, gripper_vel);
             break;
