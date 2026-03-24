@@ -53,6 +53,13 @@ void km::Joint::set_random_position() {
     set_position(dist(rng));
 }
 
+Eigen::Transform<double, 3, Eigen::Isometry> km::Revolute::get_transform() const {
+    Eigen::AngleAxisd rot(position, axis);
+    Eigen::Transform<double, 3, Eigen::Isometry> transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
+    transform.linear() = rot.toRotationMatrix();
+    return transform;
+}
+
 std::pair<Eigen::Vector3d, Eigen::Vector3d> km::Revolute::get_jacobian_col(const Eigen::Vector3d &ee_pos) const {
     Eigen::Vector3d joint_pos = world_transform.translation();
     Eigen::Vector3d rot_axis = world_transform.linear() * axis;
@@ -64,8 +71,27 @@ std::shared_ptr<km::RobotPart> km::Revolute::clone() const {
     return std::make_shared<km::Revolute>(get_name(), lim_low, lim_high);
 }
 
+void km::SequentialRobot::forward_kinematics() {
+    Eigen::Transform<double, 3, Eigen::Isometry> current_transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
+    for (const auto& part : parts) {
+        current_transform = current_transform * part->get_transform();
+        part->world_transform = current_transform; // Cache the world transform in the part
+    }
+}
+
+void km::SequentialRobot::forward_velocity() {
+    auto num_joints = static_cast<Eigen::Index>(joints.size());
+    Eigen::Vector3d end_effector_pos = get_end_effector_position();
+    for (Eigen::Index i = 0; i < num_joints; i++) {
+        auto [linear_part, angular_part] = joints[i]->get_jacobian_col(end_effector_pos);
+        jacobian.block<3, 1>(0, i) = linear_part;
+        jacobian.block<3, 1>(3, i) = angular_part;
+    }
+}
+
 Eigen::MatrixXd km::SequentialRobot::invert_jacobian_svd(const Eigen::MatrixXd &jacobian) {
     // Use SVD for pseudo-inverse
+    // unused
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(jacobian, Eigen::ComputeThinU | Eigen::ComputeThinV);
     double tolerance = 1e-6; // Threshold for singular values
     Eigen::VectorXd singular_values_inv = svd.singularValues();
@@ -81,12 +107,15 @@ Eigen::MatrixXd km::SequentialRobot::invert_jacobian_svd(const Eigen::MatrixXd &
 
 Eigen::MatrixXd km::SequentialRobot::invert_jacobian_qr(const Eigen::MatrixXd &jacobian) {
     // Use Moore-Penrose pseudo-inverse
+    // unused
     return jacobian.completeOrthogonalDecomposition().pseudoInverse();
 }
 
 Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::MatrixXd &jacobian,
                                                                    const Eigen::VectorXd &desired_ee_velocity) {
     // Solve J * q_dot = v for q_dot using QR decomposition
+    // this is the method prescribed in lectures with pseudo inverse
+    // but then in form that is recommended by Eigen because its faster
     // return jacobian.colPivHouseholderQr().solve(desired_ee_velocity);
     return jacobian.completeOrthogonalDecomposition().solve(desired_ee_velocity);
 }
@@ -94,6 +123,7 @@ Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_qr(const Eigen::
 Eigen::VectorXd km::SequentialRobot::solve_for_joint_velocities_dls(const Eigen::MatrixXd &jacobian,
     const Eigen::VectorXd &desired_ee_velocity, double lambda) {
     // Damped Least Squares solution: (J^T * J + lambda^2 * I) q_dot = J^T * v
+    // apparently more stable for inverse kinematics
     const Eigen::MatrixXd& J = jacobian;
     Eigen::MatrixXd JT = J.transpose();
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(J.cols(), J.cols());
@@ -207,22 +237,8 @@ Eigen::VectorXd km::SequentialRobot::get_joint_velocities() const {
     return velocities;
 }
 
-void km::SequentialRobot::forward_kinematics() {
-    Eigen::Transform<double, 3, Eigen::Isometry> current_transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
-    for (const auto& part : parts) {
-        current_transform = current_transform * part->get_transform();
-        part->world_transform = current_transform; // Cache the world transform in the part
-    }
-}
-
-void km::SequentialRobot::forward_velocity() {
-    auto num_joints = static_cast<Eigen::Index>(joints.size());
-    Eigen::Vector3d end_effector_pos = get_end_effector_position();
-    for (Eigen::Index i = 0; i < num_joints; i++) {
-        auto [linear_part, angular_part] = joints[i]->get_jacobian_col(end_effector_pos);
-        jacobian.block<3, 1>(0, i) = linear_part;
-        jacobian.block<3, 1>(3, i) = angular_part;
-    }
+Eigen::Transform<double, 3, Eigen::Isometry> km::SequentialRobot::get_end_effector_transform() const {
+    return parts.back()->world_transform;
 }
 
 Eigen::Vector3d km::SequentialRobot::get_end_effector_position() const {
@@ -260,26 +276,34 @@ Eigen::VectorXd km::SequentialRobot::required_joint_velocity_only_rotation(const
 }
 
 std::optional<Eigen::VectorXd> km::SequentialRobot::required_joint_angles(
-    const Eigen::Vector<double, 6> &desired_ee_pose) {
+        const Eigen::Vector<double, 6> &desired_ee_pose,
+        double learning_rate,
+        double tolerance,
+        int max_attempts,
+        int max_iterations,
+        double max_step
+    ) {
     auto desired_tf = create_transform(desired_ee_pose);
-    double learning_rate = 0.1f;
-    double max_step = 0.1f; // Max step size for joint updates
-    // random start state
-    for (int i = 0; i < 100; i++) {
-        // Try multiple random initializations to improve chances of convergence
-        set_random_joint_positions();
+    for (int i = 0; i < max_attempts; i++) {
+        if (i > 0) { // if i is 0, use the current set joint angles in this robot obj
+            set_random_joint_positions(); // random start state
+        }
         auto joint_angles = get_joint_positions();
-        for (int iter = 0; iter < 1000; iter++) {
+        for (int iter = 0; iter < max_iterations; iter++) {
             auto current_tf = get_end_effector_transform();
+            // position error is simple
             auto p_err = desired_tf.translation() - current_tf.translation();
+            // rotation error is a mystery
             const Eigen::Matrix3d R = current_tf.linear();
             const Eigen::Matrix3d Rd = desired_tf.linear();
             const Eigen::Matrix3d E = 0.5 * (R.transpose() * Rd - Rd.transpose() * R);
             Eigen::Vector3d r_err(E(2, 1), E(0, 2), E(1, 0)); // vee operator
+            // but it works (source: some AI)
             Eigen::Vector<double, 6> err;
             err.head<3>() = p_err;
             err.tail<3>() = r_err;
-            if (err.norm() < 0.07f) {
+            auto error = err.norm();
+            if (error < tolerance) {
                 return joint_angles; // Converged
             }
             // auto vel = solve_for_joint_velocities_qr(jacobian, err);
@@ -289,11 +313,15 @@ std::optional<Eigen::VectorXd> km::SequentialRobot::required_joint_angles(
             dq = dq.cwiseMax(-max_step).cwiseMin(max_step);
             set_joint_positions(joint_angles + dq);
             Eigen::VectorXd real_dq = get_joint_positions() - joint_angles; // Get the actual change after applying limits
-            if (real_dq.norm() < 1e-4) {
-                break; // No significant change after applying limits, likely stuck
+            if (real_dq.norm() < 0.1 * error * learning_rate) {
+                // if the change is too small it is likely stuck
+                // the threshold scales with the error to allow smaller steps when close to the target
+                // but prevent 500 iterations when it stuck far from target
+                // and with lr to make it invariant to the choice of learning rate
+                break;
             }
             joint_angles = get_joint_positions(); // these are with limits applied
-            std::cout << "Iteration " << i << ", " << iter << ", error norm: " << err.norm() << std::endl;
+            // std::cout << "Iteration " << i << ", " << iter << ", error norm: " << error << std::endl;
         }
     }
     return std::nullopt; // Failed to converge

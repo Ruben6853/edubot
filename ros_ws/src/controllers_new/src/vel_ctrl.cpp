@@ -37,20 +37,21 @@ Controller::Controller() :
       5ms, std::bind(&Controller::_timer_callback, this));
 
     // Eigen::Vector<double, 6> desired_ee_pose = {0.0, 0.0, 0.4, 0.000, -0.785, 1.570};
-    Eigen::Vector<double, 6> desired_ee_pose = {
-        -0.174823, 0.254109, 0.102072,
-        -2.289353, -0.000000, 0.696802
-    };
-    auto ik_solution = dummy.required_joint_angles(desired_ee_pose);
-    if (ik_solution) {
-        RCLCPP_INFO(this->get_logger(), "IK solution found for initial pose.");
-        auto sol = *ik_solution;
-        for (size_t i = 0; i < sol.size(); i++) {
-            RCLCPP_INFO(this->get_logger(), "Joint %zu: %f, %f degrees", i, sol[i], sol[i] * 180.0 / M_PI);
-        }
-    } else {
-        RCLCPP_WARN(this->get_logger(), "No IK solution found for initial pose.");
-    }
+    // Eigen::Vector<double, 6> desired_ee_pose = {
+    //     -0.174823, 0.254109, 0.102072,
+    //     -2.289353, -0.000000, 0.696802
+    // };
+    // auto ik_solution = dummy.required_joint_angles(desired_ee_pose);
+    // if (ik_solution) {
+    //     RCLCPP_INFO(this->get_logger(), "IK solution found for initial pose.");
+    //     auto sol = *ik_solution;
+    //     for (size_t i = 0; i < sol.size(); i++) {
+    //         RCLCPP_INFO(this->get_logger(), "Joint %zu: %f, %f degrees", i, sol[i], sol[i] * 180.0 / M_PI);
+    //     }
+    //     std::cout << "End effector pose for IK solution: \n" << dummy.get_end_effector_pose() << std::endl;
+    // } else {
+    //     RCLCPP_WARN(this->get_logger(), "No IK solution found for initial pose.");
+    // }
 }
 
 trajectory_msgs::msg::JointTrajectory Controller::create_msg(const Eigen::Vector<double, 5> &joint_vel,
@@ -123,12 +124,7 @@ void Controller::_timer_callback() {
 
     switch (current_goal) {
         case goal_type::to_home: {
-            Eigen::Vector<double, 5> target_pos = {0.7, 0.13, -0.5, -0.35, 0.0};
-            // Eigen::Vector<double, 5> target_pos = {-52.7, 36.9, -50.2, 13.3, 90.0}; //1, bad
-            // Eigen::Vector<double, 5> target_pos = {-74.7, -10.4, 25.6, 74.9, -15.3}; //2
-            // Eigen::Vector<double, 5> target_pos = {0.0f, 53.9f, -8.9f, 90.0f, 90.0f}; //3, good
-
-            // target_pos = target_pos * DEG2RAD;
+            Eigen::Vector<double, 5> target_pos = goal_1;
             auto diff = (target_pos - robot.get_joint_positions()).eval();
             if (diff.norm() < 0.01) {
                 auto ee_pose = robot.get_end_effector_pose();

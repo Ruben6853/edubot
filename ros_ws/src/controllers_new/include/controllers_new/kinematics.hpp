@@ -11,6 +11,7 @@
 #include <random>
 
 #define KM_ENFORCE_JOINT_LIMITS 2 // 0: no enforcement, 1: strict with exceptions, 2: clamp
+// should always be 2, todo remove
 
 
 namespace km {
@@ -58,6 +59,8 @@ namespace km {
     /**
      * Base class for all robot parts.
      * This class hierarchy allows polymorphism in the final robot class.
+     * Clone method is for the deep copy vector method,
+     * which is needed to properly copy the final robot class objects.
      */
     class RobotPart {
         std::string name;
@@ -96,7 +99,7 @@ namespace km {
 
     /**
      * Base joint class.
-     * Then there will be Revolute and Prismatic subclass.
+     * Then there could be Revolute and Prismatic subclasses
      * They share Position and limit fields.
      */
     class Joint: public RobotPart {
@@ -121,12 +124,7 @@ namespace km {
         Eigen::Vector3d axis = Eigen::Vector3d::UnitZ();
     public:
         Revolute(std::string name, double lim_low, double lim_high) : Joint(std::move(name), lim_low, lim_high){}
-        [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_transform() const override {
-            Eigen::AngleAxisd rot(position, axis);
-            Eigen::Transform<double, 3, Eigen::Isometry> transform = Eigen::Transform<double, 3, Eigen::Isometry>::Identity();
-            transform.linear() = rot.toRotationMatrix();
-            return transform;
-        }
+        [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_transform() const override;
         [[nodiscard]] std::pair<Eigen::Vector3d, Eigen::Vector3d> get_jacobian_col(const Eigen::Vector3d& ee_pos) const override;
         [[nodiscard]] std::shared_ptr<RobotPart> clone() const override;
     };
@@ -142,8 +140,8 @@ namespace km {
         Eigen::MatrixXd jacobian;
         void forward_kinematics();
         void forward_velocity();
-        static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian);
-        static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian);
+        static Eigen::MatrixXd invert_jacobian_svd(const Eigen::MatrixXd& jacobian); // unused
+        static Eigen::MatrixXd invert_jacobian_qr(const Eigen::MatrixXd& jacobian); // unused
         static Eigen::VectorXd solve_for_joint_velocities_qr(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity);
         static Eigen::VectorXd solve_for_joint_velocities_dls(const Eigen::MatrixXd& jacobian, const Eigen::VectorXd &desired_ee_velocity, double lambda = 0.01);
     public:
@@ -159,12 +157,7 @@ namespace km {
         void set_joint_velocities(const Eigen::VectorXd& velocities);
         [[nodiscard]] Eigen::VectorXd get_joint_velocities() const;
 
-        [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const {
-            if (parts.empty()) {
-                throw std::runtime_error("Robot has no parts.");
-            }
-            return parts.back()->world_transform;
-        }
+        [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const;
         [[nodiscard]] Eigen::Vector3d get_end_effector_position() const;
         [[nodiscard]] Eigen::Vector3d get_end_effector_rotation() const;
         [[nodiscard]] Eigen::Vector<double, 6> get_end_effector_pose() const;
@@ -172,6 +165,13 @@ namespace km {
         Eigen::VectorXd required_joint_velocity(const Eigen::Vector<double, 6>& desired_ee_velocity); // inverse velocity
         Eigen::VectorXd required_joint_velocity_only_position(const Eigen::Vector3d& desired_ee_velocity);
         Eigen::VectorXd required_joint_velocity_only_rotation(const Eigen::Vector3d& desired_ee_velocity);
-        std::optional<Eigen::VectorXd> required_joint_angles(const Eigen::Vector<double, 6> &desired_ee_pose); // todo inverse kinematics
+        std::optional<Eigen::VectorXd> required_joint_angles( // inverse kinematics based on jacobian
+            const Eigen::Vector<double, 6> &desired_ee_pose,
+            double learning_rate = 0.15f,
+            double tolerance = 1e-4f,
+            int max_attempts = 100,
+            int max_iterations = 1000,
+            double max_step = 0.1f
+            );
     };
 };

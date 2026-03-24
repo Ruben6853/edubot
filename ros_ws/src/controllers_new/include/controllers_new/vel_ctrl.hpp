@@ -76,6 +76,9 @@ private:
     double gripper_vel;
 
     goal_type current_goal = goal_type::to_home;
+
+    Eigen::Vector<double, 5> goal_1 = Eigen::Vector<double, 5>(0.7, 0.13, -0.5, -0.35, 0.0);
+    Eigen::Vector<double, 5> goal_2 = Eigen::Vector<double, 5>(0.7, 0.13, -0.5, -0.35, 0.0);
 public:
     Controller();
 };

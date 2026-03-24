@@ -1,0 +1,14 @@
+IK solution found for pose:
+ 0.2  0.2  0.2    0 1.57 0.65
+Joint angles:  -0.915901 -0.0783708   0.686672   -1.56531   -1.56849
+IK solution found for pose:
+  0.2   0.1   0.4     0     0 -1.57
+Joint angles:  -1.30376 -0.182615  0.447067   1.30684 -0.265477
+No IK solution found for pose:
+     0      0    0.4      0 -0.785   1.57
+IK solution found for pose:
+    0     0  0.07 3.141     0     0
+Joint angles: 0.00627549    -1.5708   -0.70444   -1.54812   -3.13319
+IK solution found for pose:
+     0 0.0452   0.45 -0.785      0  3.141
+Joint angles:          2 -0.0399655    1.28589    1.17471   -1.63519
