@@ -20,7 +20,13 @@ int main() {
     KMLINK("gripper_center", 0.0f, 0.0f, 0.075f, 0.0f, 0.0f, 0.0f)
     });
 
-    robot.set_joint_positions(std::vector<double>{0.0f, 0.0f, 0.0f, -1.57f, -1.57f});
+    robot.set_joint_positions(std::vector<double>{
+    -0.99862148778,
+    0.46019423400000004,
+    -1.14128170032,
+    -1.0477088727400001,
+    1.51557301064});
+
     auto pose = robot.get_end_effector_pose();
     std::cout << "End effector pose at home position: \n" << pose.transpose() << std::endl;
 
