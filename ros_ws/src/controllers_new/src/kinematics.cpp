@@ -296,12 +296,35 @@ std::optional<Eigen::VectorXd> km::SequentialRobot::required_joint_angles(
             // rotation error is a mystery
             const Eigen::Matrix3d R = current_tf.linear();
             const Eigen::Matrix3d Rd = desired_tf.linear();
-            const Eigen::Matrix3d E = 0.5 * (R.transpose() * Rd - Rd.transpose() * R);
-            Eigen::Vector3d r_err(E(2, 1), E(0, 2), E(1, 0)); // vee operator
-            // but it works (source: some AI)
+            // Quaternion shortest-arc orientation error: q_err = qd * q^{-1}
+            Eigen::Quaterniond q(R);
+            Eigen::Quaterniond qd(Rd);
+            q.normalize();
+            qd.normalize();
+
+            // Enforce same hemisphere to avoid discontinuity / long-way bias
+            if (q.dot(qd) <0.0) {
+                qd.coeffs() *= -1.0;
+            }
+
+            Eigen::Quaterniond q_err = qd * q.conjugate();
+            q_err.normalize();
+
+            // Log map: r_err = theta * axis
+            Eigen::Vector3d v(q_err.x(), q_err.y(), q_err.z());
+            double w = std::clamp(q_err.w(), -1.0,1.0);
+            double nv = v.norm();
+
+            Eigen::Vector3d r_err;
+            if (nv <1e-12) {
+                r_err.setZero();
+            } else {
+                double theta =2.0 * std::atan2(nv, w); // in [0, pi]
+                r_err = (theta / nv) * v;
+            }
             Eigen::Vector<double, 6> err;
             err.head<3>() = p_err;
-            err.tail<3>() = r_err;
+            err.tail<3>() = 0.3 * r_err;
             auto error = err.norm();
             if (error < tolerance) {
                 return joint_angles; // Converged

@@ -84,28 +84,112 @@ void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::Share
   if (!first_state_received) {
     RCLCPP_INFO(this->get_logger(), "First joint state received, starting trajectory execution.");
     first_state_received = true;
-    const double duration = 3.0f; // seconds
+    const double duration = 10.0f; // seconds
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
       home_joint_pos,
       home_joint_pos,
-      duration
+      3.0f
     ));
     _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
     home_joint_pos,
-      std::vector<double>{0.7, 0.13, -0.5, -0.35, 0.0},
+      std::vector<double>{
+        0.64733988916,
+        0.30526217522,
+        -1.13361179642,
+        -0.90658264098,
+        2.37613622822,
+        0.9
+      },
       duration
     ));
-    robot.set_joint_positions(std::vector<double>{0.7, 0.13, -0.5, -0.35, 0.0});
-    auto pose = robot.get_end_effector_pose();
-    auto ik_result = robot.required_joint_angles(pose);
-    if (ik_result) {
-      auto vec = km::vector_to_std(*ik_result);
-      _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
-        std::vector<double>{0.7, 0.13, -0.5, -0.35, 0.0},
-      vec,
-        duration
-      ));
-    }
+    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+      std::vector<double>{
+        0.64733988916,
+        0.30526217522,
+        -1.13361179642,
+        -0.90658264098,
+        2.37613622822,
+        0.9
+      },
+      std::vector<double>{
+        0.64733988916,
+        0.30526217522,
+        -1.13361179642,
+        -0.90658264098,
+        2.37613622822,
+        0.3
+      },
+      duration
+    ));
+    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+      std::vector<double>{
+        0.64733988916,
+        0.30526217522,
+        -1.13361179642,
+        -0.90658264098,
+        2.37613622822,
+        0.3
+      },
+      std::vector<double>{
+        -0.01227184624,
+        0.53075734988,
+        -0.07209709666,
+        -1.65056331928,
+        1.7027186658,
+        0.3
+      },
+      duration
+    ));
+    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+      std::vector<double>{
+        -0.01227184624,
+        0.53075734988,
+        -0.07209709666,
+        -1.65056331928,
+        1.7027186658,
+        0.3
+      },
+      std::vector<double>{
+        -0.8743690446,
+        0.17947575126,
+        -1.02930110338,
+        -1.0906603345800001,
+        0.9127185641,
+        0.3
+      },
+      duration
+    ));
+    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    std::vector<double>{
+      -0.8743690446,
+      0.17947575126,
+      -1.02930110338,
+      -1.0906603345800001,
+      0.9127185641,
+      0.3
+      },
+      std::vector<double>{
+        -0.8743690446,
+        0.17947575126,
+        -1.02930110338,
+        -1.0906603345800001,
+        0.9127185641,
+        0.9
+      },
+      duration
+    ));
+    _traj_queue.emplace(std::make_shared<SmoothLinearJointPath>(
+    std::vector<double>{
+      -0.8743690446,
+      0.17947575126,
+      -1.02930110338,
+      -1.0906603345800001,
+      0.9127185641,
+      0.9
+      },
+      home_joint_pos,
+      duration
+    ));
     _beginning = this->now();
   }
 }

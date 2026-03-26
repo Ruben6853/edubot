@@ -57,8 +57,8 @@ enum class goal_type {
 class Controller : public rclcpp::Node
 {
 private:
-    [[nodiscard]] trajectory_msgs::msg::JointTrajectory create_msg(const Eigen::Vector<double, 5>& joint_vel, double gripper_vel);
-    void publish(const Eigen::Vector<double, 5>& joint_vel, double gripper_vel);
+    [[nodiscard]] trajectory_msgs::msg::JointTrajectory create_msg(const Eigen::Vector<double, 5>& joint_pos, double gripper_pos);
+    void publish(const Eigen::Vector<double, 5>& joint_pos, double gripper_pos);
 
     rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr _cmd_publisher;
 

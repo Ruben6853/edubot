@@ -62,6 +62,25 @@ target_compile_features(vel_ctrl PUBLIC c_std_99 cxx_std_17)  # Require C99 and 
 install(TARGETS vel_ctrl
         DESTINATION lib/${PROJECT_NAME})
 
+# comp controller
+add_executable(comp
+        src/comp.cpp
+        src/kinematics.cpp
+)
+ament_target_dependencies(comp
+        rclcpp
+        trajectory_msgs
+        sensor_msgs
+)
+target_include_directories(comp PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/controllers_new>
+        $<INSTALL_INTERFACE:include>
+)
+target_compile_features(comp PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+install(TARGETS comp
+        DESTINATION lib/${PROJECT_NAME})
+
 
 
 if(BUILD_TESTING)

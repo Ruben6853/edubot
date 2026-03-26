@@ -34,13 +34,13 @@ int main() {
             1e-4,
             500,
             1000,
-            0.01
+            0.1
             );
         if (ik_solution) {
             auto ee_pose = robot.get_end_effector_pose();
             std::cout << "IK solution found for pose: \n" << pose.transpose()
-            << "\nJoint angles: " << ik_solution->transpose()
-            << "\nEnd effector pose for IK solution: \n" << ee_pose.transpose() << std::endl;
+            << "\nJoint angles: " << ik_solution->transpose()/M_PI *180.0f
+            << "\nEnd effector pose for IK solution: \n" << ee_pose.transpose()<< std::endl;
         }
         else {
             std::cout << "No IK solution found for pose: \n" << pose.transpose() << std::endl;

@@ -54,21 +54,21 @@ Controller::Controller() :
     // }
 }
 
-trajectory_msgs::msg::JointTrajectory Controller::create_msg(const Eigen::Vector<double, 5> &joint_vel,
-    double gripper_vel) {
+trajectory_msgs::msg::JointTrajectory Controller::create_msg(const Eigen::Vector<double, 5> &joint_pos,
+    double gripper_pos) {
     auto now = this->now();
     auto msg = trajectory_msgs::msg::JointTrajectory();
     msg.header.stamp = now;
-    auto vel = km::vector_to_std(joint_vel);
-    vel.emplace_back(gripper_vel);
+    auto vel = km::vector_to_std(joint_pos);
+    vel.emplace_back(gripper_pos);
     auto point = trajectory_msgs::msg::JointTrajectoryPoint();
     point.velocities = vel;
     msg.points = {point};
     return msg;
 }
 
-void Controller::publish(const Eigen::Vector<double, 5> &joint_vel, double gripper_vel) {
-    auto msg = create_msg(joint_vel, gripper_vel);
+void Controller::publish(const Eigen::Vector<double, 5> &joint_pos, double gripper_pos) {
+    auto msg = create_msg(joint_pos, gripper_pos);
     this->_cmd_publisher->publish(msg);
 }
 

@@ -12,3 +12,10 @@ add_executable(jacobian
 )
 
 target_include_directories(jacobian PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ros_ws/src/controllers_new/include/controllers_new)
+
+add_executable(pose_test
+        pose_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../ros_ws/src/controllers_new/src/kinematics.cpp
+)
+
+target_include_directories(pose_test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ros_ws/src/controllers_new/include/controllers_new)
