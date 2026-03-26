@@ -15,7 +15,8 @@ enum class goal_type {
     to_midpoint,
     to_above_place,
     place,
-    open_gripper
+    open_gripper,
+    rise
 };
 
 class Controller : public rclcpp::Node

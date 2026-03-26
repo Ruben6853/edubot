@@ -125,10 +125,10 @@ void Controller::_timer_callback() {
     _last_t = now;
 
     // settings
-    const double approach_speed_pick = 0.05f;
+    const double approach_speed_pick = 0.07f;
     const double approach_speed_place = 0.04f;
     const double midpoint_tol = 0.1f;
-    const double gripper_open = 0.6f;
+    const double gripper_open = 0.45f;
 
     switch (current_goal) {
         case goal_type::idle:
@@ -152,7 +152,7 @@ void Controller::_timer_callback() {
             target_gripper_pos = gripper_open;
             if (move_linear_until_wall(
                 {0.0f, 0.0f, -approach_speed_pick, 0.0f, 0.0f, 0.0f},
-                dt, 0.01f, 0.21f
+                dt, 0.01f, 0.31f
                 )) {;
                 change_goal(goal_type::close_gripper);
                 std::cout << "Reached pick up position, closing gripper." << std::endl;
@@ -179,7 +179,7 @@ void Controller::_timer_callback() {
         case goal_type::place:
             if (move_linear_until_wall(
                 {0.0f, 0.0f, -approach_speed_place, 0.0f, 0.0f, 0.0f},
-                dt, 0.01f, 0.21f
+                dt, 0.01f, 0.31f
                 )) {;
                 change_goal(goal_type::open_gripper);
                 std::cout << "Reached place position, opening gripper." << std::endl;
@@ -187,8 +187,14 @@ void Controller::_timer_callback() {
             break;
         case goal_type::open_gripper:
             if (open_gripper()) {
-                change_goal(goal_type::to_home);
-                std::cout << "Gripper opened, task complete." << std::endl;
+                change_goal(goal_type::rise);
+                std::cout << "Gripper opened, rising." << std::endl;
+            }
+            break;
+        case goal_type::rise:
+            if (move_j(joint_wp_above_place, 0.1f)) {
+                change_goal(goal_type::to_above_pick_up);
+                std::cout << "Risen, back to pick up." << std::endl;
             }
             break;
     }
