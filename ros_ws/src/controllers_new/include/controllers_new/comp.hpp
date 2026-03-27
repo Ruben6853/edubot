@@ -82,8 +82,9 @@ private:
 
     goal_type current_goal = goal_type::idle;
     rclcpp::Time _goal_start_time;
+    int place_cycle = 0; // to keep track of which above place waypoint to use
     void change_goal(goal_type new_goal) {
-        if (new_goal == goal_type::to_above_place) {
+        if (new_goal == goal_type::rise) {
             place_cycle += 1;
         }
         current_goal = new_goal;
@@ -97,7 +98,7 @@ private:
     Eigen::Vector<double, 5> joint_wp_home = Eigen::Vector<double, 5>::Zero();
     Eigen::Vector<double, 6> pose_wp_above_pick_up = {0.0f, dist, 0.04f, -3.1415f, -0.4f, 1.57f};
     Eigen::Vector<double, 5> joint_wp_above_pick_up; // to be calculated using ik
-    Eigen::Vector<double, 6> pose_wp_above_place_end = {0.0f, dist, 0.10f, -3.1415f, -0.4f, 1.57f}; // after third cycle
+    Eigen::Vector<double, 6> pose_wp_above_place_end = {0.0f, dist, 0.11f, -3.1415f, -0.4f, 1.57f}; // after third cycle
     Eigen::Vector<double, 6> pose_wp_above_place_0 = {0.0f, dist, 0.04f, -3.1415f, -0.4f, 1.57f}; // for first cycle
     Eigen::Vector<double, 6> pose_wp_above_place_1 = {0.0f, dist, 0.06f, -3.1415f, -0.4f, 1.57f}; // for second cycle
     Eigen::Vector<double, 6> pose_wp_above_place_2 = {0.0f, dist, 0.085f, -3.1415f, -0.4f, 1.57f}; // for third cycle
@@ -106,8 +107,9 @@ private:
     Eigen::Vector<double, 5> joint_wp_above_place_1;
     Eigen::Vector<double, 5> joint_wp_above_place_2;
     Eigen::Vector<double, 5> joint_wp_above_place; // current
-    int place_cycle = -1; // to keep track of which above place waypoint to use
     Eigen::Vector<double, 5> joint_wp_traj_midpoint;
+
+    Eigen::Vector<double, 5> joint_wp_for_open;
 public:
     Controller();
 };

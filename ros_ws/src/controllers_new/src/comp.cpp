@@ -241,7 +241,7 @@ void Controller::_timer_callback() {
             //     dt, 0.01f, 0.31f
             //     )) {;
             if (move_down_until_floor(
-                approach_speed_place, dt, 0.01f, 0.31f
+                approach_speed_place, dt, 0.01f, 0.21f
                 )) {
                 change_goal(goal_type::open_gripper);
                 std::cout << "Reached place position, opening gripper." << std::endl;
@@ -338,15 +338,19 @@ bool Controller::move_down_until_floor(double vel, double dt, double vel_thresho
             std::cout << "End effector velocity below threshold: " << vel << " < " << vel_threshold << ", no move time: " << _move_down_until_floor_no_move_time << std::endl;
             if (_move_down_until_floor_no_move_time > no_move_time_threshold) {
                 RCLCPP_INFO(this->get_logger(), "End effector velocity below threshold for too long, Stopping movement.");
-                publish(robot.get_joint_positions());
+                // publish(robot.get_joint_positions());
                 _move_down_until_floor_no_move_time = 0.0;
                 _move_down_until_floor_first_call = true;
                 Eigen::Vector<double, 6> target_pose = _move_down_until_floor_start_pose;
-                target_pose[2] = current_ee_pos[2] + 0.02f;
+                target_pose[2] = current_ee_pos[2] + 0.01f;
+                dummy.set_joint_positions(_move_down_until_floor_state);
                 auto new_joint_pos = dummy.required_joint_angles(target_pose);
-                if (new_joint_pos) {
+                if (new_joint_pos && (place_cycle>0)) {
+                    joint_wp_for_open = new_joint_pos->head<5>();
                     publish(new_joint_pos->head<5>());
                 } else {
+                    joint_wp_for_open = robot.get_joint_positions();
+                    publish(robot.get_joint_positions());
                     RCLCPP_ERROR(this->get_logger(), "IK failed when trying to move up after hitting floor, manual intervention may be required.");
                 }
                 return true;
@@ -385,8 +389,11 @@ bool Controller::open_gripper() {
         RCLCPP_INFO(this->get_logger(), "Gripper closed to target position.");
         return true;
     }
-    target_gripper_pos = 1.0f;
-    publish(robot.get_joint_positions());
+    if (place_cycle == 0) {
+        joint_wp_for_open = robot.get_joint_positions();
+    }
+    target_gripper_pos = 0.9f;
+    publish(joint_wp_for_open);
     return false;
 }
 
