@@ -3,7 +3,7 @@
 constexpr double DEG2RAD = M_PI / 180.0;
 
 Controller::Controller() :
-  rclcpp::Node("vel_ctrl"), robot({
+  rclcpp::Node("comp_ctrl"), robot({
     KMLINK("base", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, M_PI),
     KMLINK("shoulder_base", 0.0f, -0.0452f, 0.0165f, 0.0f, 0.0f, 0.0f),
     KMREV("shoulder_yaw", -2.0f, 2.0f),
@@ -47,16 +47,43 @@ Controller::Controller() :
     } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above pick up position. Check if the pose is reachable.");
     }
-    auto ik_sol_place = dummy.required_joint_angles(pose_wp_above_place);
-    if (ik_sol_place) {
-        joint_wp_above_place = ik_sol_place->head<5>();
-        joint_wp_above_place[0] += this->angle;
-        joint_wp_above_place[4] += M_PI ;
-        joint_wp_traj_midpoint = ik_sol_place->head<5>();
+    auto ik_sol_place_end = dummy.required_joint_angles(pose_wp_above_place_end);
+    if (ik_sol_place_end) {
+        joint_wp_above_place_end = ik_sol_place_end->head<5>();
+        joint_wp_above_place_end[0] += this->angle;
+        joint_wp_above_place_end[4] += M_PI ;
+        joint_wp_traj_midpoint = ik_sol_place_end->head<5>();
         joint_wp_traj_midpoint[4] += M_PI;
-        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position.");
+        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position end.");
     } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above place position. Check if the pose is reachable.");
+    }
+    auto ik_sol_place_0 = dummy.required_joint_angles(pose_wp_above_place_0);
+    if (ik_sol_place_0) {
+        joint_wp_above_place_0 = ik_sol_place_0->head<5>();
+        joint_wp_above_place_0[0] += this->angle;
+        joint_wp_above_place_0[4] += M_PI;
+        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position 0.");
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above place position 0. Check if the pose is reachable.");
+    }
+    auto ik_sol_place_1 = dummy.required_joint_angles(pose_wp_above_place_1);
+    if (ik_sol_place_1) {
+        joint_wp_above_place_1 = ik_sol_place_1->head<5>();
+        joint_wp_above_place_1[0] += this->angle;
+        joint_wp_above_place_1[4] += M_PI;
+        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position 1.");
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above place position 1. Check if the pose is reachable.");
+    }
+    auto ik_sol_place_2 = dummy.required_joint_angles(pose_wp_above_place_2);
+    if (ik_sol_place_2) {
+        joint_wp_above_place_2 = ik_sol_place_2->head<5>();
+        joint_wp_above_place_2[0] += this->angle;
+        joint_wp_above_place_2[4] += M_PI;
+        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position 2.");
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above place position 2. Check if the pose is reachable.");
     }
 }
 
@@ -135,6 +162,21 @@ void Controller::_timer_callback() {
     const double midpoint_tol = 0.1f;
     const double gripper_open = 0.45f;
 
+    switch (place_cycle) {
+        case 0:
+            joint_wp_above_place = joint_wp_above_place_0;
+            break;
+        case 1:
+            joint_wp_above_place = joint_wp_above_place_1;
+            break;
+        case 2:
+            joint_wp_above_place = joint_wp_above_place_2;
+            break;
+        default:
+            joint_wp_above_place = joint_wp_above_place_end;
+            break;
+    }
+
     switch (current_goal) {
         case goal_type::idle:
             break;
@@ -169,7 +211,7 @@ void Controller::_timer_callback() {
         case goal_type::close_gripper:
             if (close_gripper(0.5f, dt, 0.1f, 0.5f)) {
                 change_goal(goal_type::to_midpoint);
-                std::cout << "Gripper closed, moving to above place position." << std::endl;
+                std::cout << "Gripper closed, moving to above place position for cycle " << place_cycle << std::endl;
             }
             break;
         case goal_type::to_midpoint:
@@ -185,10 +227,13 @@ void Controller::_timer_callback() {
             }
             break;
         case goal_type::place:
-            if (move_linear_until_wall(
-                {0.0f, 0.0f, -approach_speed_place, 0.0f, 0.0f, 0.0f},
-                dt, 0.01f, 0.31f
-                )) {;
+            // if (move_linear_until_wall(
+            //     {0.0f, 0.0f, -approach_speed_place, 0.0f, 0.0f, 0.0f},
+            //     dt, 0.01f, 0.31f
+            //     )) {;
+            if (move_down_until_floor(
+                approach_speed_place, dt, 0.01f, 0.31f
+                )) {
                 change_goal(goal_type::open_gripper);
                 std::cout << "Reached place position, opening gripper." << std::endl;
             }
@@ -208,7 +253,7 @@ void Controller::_timer_callback() {
         case goal_type::to_midpoint_back:
             if (move_j(joint_wp_traj_midpoint, 0.3f)) {
                 change_goal(goal_type::to_above_pick_up);
-                std::cout << "Reached trajectory midpoint, moving to home position." << std::endl;
+                std::cout << "Reached trajectory midpoint, restarting cycle." << std::endl;
             }
             break;
     }
@@ -277,23 +322,26 @@ bool Controller::move_down_until_floor(double vel, double dt, double vel_thresho
     auto current_ee_pos = robot.get_end_effector_position();
     Eigen::Matrix<double, 3, 1> vel_vec = (current_ee_pos - _move_down_until_floor_ik_last_pos) / dt;
     double actual_vel = vel_vec[2];
-    std::cout << "Current end effector position: " << current_ee_pos.transpose()[2] << ", velocity: " << actual_vel << ", goal time: " << goal_time << std::endl;
+    // std::cout << "Current end effector position: " << current_ee_pos.transpose()[2] << ", velocity: " << actual_vel << ", goal time: " << goal_time << std::endl;
     if (goal_time > 0.5f) {
         if (std::abs(actual_vel) < vel_threshold) {
             _move_down_until_floor_no_move_time += dt;
             std::cout << "End effector velocity below threshold: " << vel << " < " << vel_threshold << ", no move time: " << _move_down_until_floor_no_move_time << std::endl;
             if (_move_down_until_floor_no_move_time > no_move_time_threshold) {
-                RCLCPP_INFO(this->get_logger(), "End effector velocity below threshold for too long, assuming contact with wall. Stopping movement.");
+                RCLCPP_INFO(this->get_logger(), "End effector velocity below threshold for too long, Stopping movement.");
                 publish(robot.get_joint_positions());
                 _move_down_until_floor_no_move_time = 0.0;
+                _move_down_until_floor_first_call = true;
                 return true;
             }
         } else {
             _move_down_until_floor_no_move_time = 0.0; // reset timer if end effector is still moving
         }
         if (current_ee_pos[2] < 0.0f) {
-            RCLCPP_INFO(this->get_logger(), "End effector too close to the ground, stopping to prevent damage.");
+            RCLCPP_INFO(this->get_logger(), "End effector hit the floor, stopping.");
             publish(robot.get_joint_positions());
+            _move_down_until_floor_first_call = true;
+            _move_down_until_floor_no_move_time = 0.0;
             return true;
         }
     }
@@ -304,6 +352,8 @@ bool Controller::move_down_until_floor(double vel, double dt, double vel_thresho
     if (!new_joint_pos) {
         RCLCPP_ERROR(this->get_logger(), "IK failed in move_down_until_floor, stopping movement to prevent damage.");
         publish(robot.get_joint_positions());
+        _move_down_until_floor_first_call = true;
+        _move_down_until_floor_no_move_time = 0.0;
         return true;
     }
     _move_down_until_floor_state = new_joint_pos->head<5>();
