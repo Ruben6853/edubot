@@ -43,8 +43,6 @@ Controller::Controller() :
         joint_wp_above_pick_up = ik_sol_pick_up->head<5>();
         // joint_wp_above_pick_up[0] -= this->angle;
         joint_wp_above_pick_up[4] += M_PI;
-        joint_wp_traj_midpoint = ik_sol_pick_up->head<5>();
-        joint_wp_traj_midpoint[4] += M_PI;
         RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above pick up position.");
     } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above pick up position. Check if the pose is reachable.");
@@ -54,6 +52,8 @@ Controller::Controller() :
         joint_wp_above_place = ik_sol_place->head<5>();
         joint_wp_above_place[0] += this->angle;
         joint_wp_above_place[4] += M_PI ;
+        joint_wp_traj_midpoint = ik_sol_place->head<5>();
+        joint_wp_traj_midpoint[4] += M_PI;
         RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above place position.");
     } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above place position. Check if the pose is reachable.");
@@ -201,8 +201,14 @@ void Controller::_timer_callback() {
             break;
         case goal_type::rise:
             if (move_j(joint_wp_above_place, 0.1f)) {
-                change_goal(goal_type::to_above_pick_up);
+                change_goal(goal_type::to_midpoint_back);
                 std::cout << "Risen, back to pick up." << std::endl;
+            }
+            break;
+        case goal_type::to_midpoint_back:
+            if (move_j(joint_wp_traj_midpoint, 0.3f)) {
+                change_goal(goal_type::to_above_pick_up);
+                std::cout << "Reached trajectory midpoint, moving to home position." << std::endl;
             }
             break;
     }
