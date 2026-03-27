@@ -93,14 +93,14 @@ private:
 
     // waypoints
     const double dist = 0.18f; // dist and angle are to position gripper above place point
-    const double angle = -0.8f;
+    const double angle = -0.7f;
     Eigen::Vector<double, 5> joint_wp_home = Eigen::Vector<double, 5>::Zero();
-    Eigen::Vector<double, 6> pose_wp_above_pick_up = {0.0f, dist, 0.06f, -3.1415f, -0.4f, 1.57f};
+    Eigen::Vector<double, 6> pose_wp_above_pick_up = {0.0f, dist, 0.04f, -3.1415f, -0.4f, 1.57f};
     Eigen::Vector<double, 5> joint_wp_above_pick_up; // to be calculated using ik
-    Eigen::Vector<double, 6> pose_wp_above_place_end = {0.0f, dist, 0.13f, -3.1415f, -0.4f, 1.57f}; // after third cycle
-    Eigen::Vector<double, 6> pose_wp_above_place_0 = {0.0f, dist, 0.06f, -3.1415f, -0.4f, 1.57f}; // for first cycle
-    Eigen::Vector<double, 6> pose_wp_above_place_1 = {0.0f, dist, 0.08f, -3.1415f, -0.4f, 1.57f}; // for second cycle
-    Eigen::Vector<double, 6> pose_wp_above_place_2 = {0.0f, dist, 0.10f, -3.1415f, -0.4f, 1.57f}; // for third cycle
+    Eigen::Vector<double, 6> pose_wp_above_place_end = {0.0f, dist, 0.10f, -3.1415f, -0.4f, 1.57f}; // after third cycle
+    Eigen::Vector<double, 6> pose_wp_above_place_0 = {0.0f, dist, 0.04f, -3.1415f, -0.4f, 1.57f}; // for first cycle
+    Eigen::Vector<double, 6> pose_wp_above_place_1 = {0.0f, dist, 0.06f, -3.1415f, -0.4f, 1.57f}; // for second cycle
+    Eigen::Vector<double, 6> pose_wp_above_place_2 = {0.0f, dist, 0.085f, -3.1415f, -0.4f, 1.57f}; // for third cycle
     Eigen::Vector<double, 5> joint_wp_above_place_end;
     Eigen::Vector<double, 5> joint_wp_above_place_0;
     Eigen::Vector<double, 5> joint_wp_above_place_1;
