@@ -24,6 +24,7 @@ class Controller : public rclcpp::Node
 private:
     [[nodiscard]] trajectory_msgs::msg::JointTrajectory create_msg(const Eigen::Vector<double, 5>& joint_pos, double gripper_pos);
     void publish(const Eigen::Vector<double, 5>& joint_pos);
+    void publish_current_pos();
 
     rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr _cmd_publisher;
 
@@ -55,6 +56,20 @@ private:
         double vel_threshold = 0.01,
         double no_move_time_threshold = 0.5
         );
+
+    double _move_down_until_floor_no_move_time = 0.0;
+    Eigen::Vector<double, 3> _move_down_until_floor_ik_last_pos;
+    bool _move_down_until_floor_first_call = true;
+    Eigen::Vector<double, 6> _move_down_until_floor_start_pose;
+    Eigen::Vector<double, 5> _move_down_until_floor_state;
+
+    bool move_down_until_floor(
+        double vel,
+        double dt,
+        double vel_threshold = 0.01,
+        double no_move_time_threshold = 0.5
+    );
+
     bool open_gripper();
     double _close_gripper_no_move_time = 0.0;
     double _close_gripper_last_pos = 0.0;
@@ -76,7 +91,7 @@ private:
     const double dist = 0.18f; // dist and angle are to position gripper above place point
     const double angle = -0.8f;
     Eigen::Vector<double, 5> joint_wp_home = Eigen::Vector<double, 5>::Zero();
-    Eigen::Vector<double, 6> pose_wp_above_pick_up = {0.0f, dist, 0.07f, -3.1415f, -0.4f, 1.57f};
+    Eigen::Vector<double, 6> pose_wp_above_pick_up = {0.0f, dist, 0.06f, -3.1415f, -0.4f, 1.57f};
     Eigen::Vector<double, 5> joint_wp_above_pick_up; // to be calculated using ik
     Eigen::Vector<double, 6> pose_wp_above_place = {0.0f, dist, 0.13f, -3.1415f, -0.4f, 1.57f};
     Eigen::Vector<double, 5> joint_wp_above_place;

@@ -78,6 +78,11 @@ void Controller::publish(const Eigen::Vector<double, 5> &joint_pos) {
     this->_cmd_publisher->publish(msg);
 }
 
+void Controller::publish_current_pos() {
+    const auto current_pos = robot.get_joint_positions();
+    publish(current_pos);
+}
+
 void Controller::_joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg) {
 
     auto now = this->now();
@@ -150,10 +155,13 @@ void Controller::_timer_callback() {
             break;
         case goal_type::pick_up:
             target_gripper_pos = gripper_open;
-            if (move_linear_until_wall(
-                {0.0f, 0.0f, -approach_speed_pick, 0.0f, 0.0f, 0.0f},
-                dt, 0.01f, 0.31f
-                )) {;
+            // if (move_linear_until_wall(
+            //     {0.0f, 0.0f, -approach_speed_pick, 0.0f, 0.0f, 0.0f},
+            //     dt, 0.01f, 0.31f
+            //     )) {;
+            if (move_down_until_floor(
+                approach_speed_pick, dt, 0.01f, 0.21f
+                )) {
                 change_goal(goal_type::close_gripper);
                 std::cout << "Reached pick up position, closing gripper." << std::endl;
             }
@@ -248,6 +256,53 @@ bool Controller::move_linear_until_wall(
     publish(
         robot.get_joint_positions() + joint_vel * dt
         );
+    return false;
+}
+
+bool Controller::move_down_until_floor(double vel, double dt, double vel_threshold,
+                                       double no_move_time_threshold) {
+    if (_move_down_until_floor_first_call) {
+        _move_down_until_floor_start_pose = robot.get_end_effector_pose();
+        _move_down_until_floor_state = robot.get_joint_positions();
+        _move_down_until_floor_first_call = false;
+    }
+    auto now = this->now();
+    double goal_time = (now - _goal_start_time).seconds();
+    auto current_ee_pos = robot.get_end_effector_position();
+    Eigen::Matrix<double, 3, 1> vel_vec = (current_ee_pos - _move_down_until_floor_ik_last_pos) / dt;
+    double actual_vel = vel_vec[2];
+    std::cout << "Current end effector position: " << current_ee_pos.transpose()[2] << ", velocity: " << actual_vel << ", goal time: " << goal_time << std::endl;
+    if (goal_time > 0.5f) {
+        if (std::abs(actual_vel) < vel_threshold) {
+            _move_down_until_floor_no_move_time += dt;
+            std::cout << "End effector velocity below threshold: " << vel << " < " << vel_threshold << ", no move time: " << _move_down_until_floor_no_move_time << std::endl;
+            if (_move_down_until_floor_no_move_time > no_move_time_threshold) {
+                RCLCPP_INFO(this->get_logger(), "End effector velocity below threshold for too long, assuming contact with wall. Stopping movement.");
+                publish(robot.get_joint_positions());
+                _move_down_until_floor_no_move_time = 0.0;
+                return true;
+            }
+        } else {
+            _move_down_until_floor_no_move_time = 0.0; // reset timer if end effector is still moving
+        }
+        if (current_ee_pos[2] < 0.0f) {
+            RCLCPP_INFO(this->get_logger(), "End effector too close to the ground, stopping to prevent damage.");
+            publish(robot.get_joint_positions());
+            return true;
+        }
+    }
+    Eigen::Vector<double, 6> target_pose = _move_down_until_floor_start_pose;
+    target_pose[2] = current_ee_pos[2] - vel * dt; // move down along z axis, but keep publishing relative to start pos, not current pos
+    dummy.set_joint_positions(_move_down_until_floor_state);
+    auto new_joint_pos = dummy.required_joint_angles(target_pose);
+    if (!new_joint_pos) {
+        RCLCPP_ERROR(this->get_logger(), "IK failed in move_down_until_floor, stopping movement to prevent damage.");
+        publish(robot.get_joint_positions());
+        return true;
+    }
+    _move_down_until_floor_state = new_joint_pos->head<5>();
+    publish(_move_down_until_floor_state);
+    _move_down_until_floor_ik_last_pos = current_ee_pos;
     return false;
 }
 
