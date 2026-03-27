@@ -43,7 +43,8 @@ Controller::Controller() :
         joint_wp_above_pick_up = ik_sol_pick_up->head<5>();
         // joint_wp_above_pick_up[0] -= this->angle;
         joint_wp_above_pick_up[4] += M_PI;
-        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above pick up position.");
+        RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above pick up position");
+        std::cout << "Joint waypoint for above pick up position: " << joint_wp_above_pick_up.transpose() << std::endl;
     } else {
         RCLCPP_ERROR(this->get_logger(), "Failed to calculate joint waypoint for above pick up position. Check if the pose is reachable.");
     }
@@ -211,13 +212,13 @@ void Controller::_timer_callback() {
         case goal_type::close_gripper:
             if (close_gripper(0.5f, dt, 0.1f, 0.5f)) {
                 change_goal(goal_type::to_midpoint);
-                std::cout << "Gripper closed, moving to above place position for cycle " << place_cycle << std::endl;
+                std::cout << "Gripper closed, moving to midpoint " << std::endl;
             }
             break;
         case goal_type::to_midpoint:
             if (move_j(joint_wp_traj_midpoint, midpoint_tol)) {
                 change_goal(goal_type::to_above_place);
-                std::cout << "Reached trajectory midpoint, moving to above place position." << std::endl;
+                std::cout << "Reached trajectory midpoint, moving to above place position for cycle " << place_cycle <<  std::endl;
             }
             break;
         case goal_type::to_above_place:

@@ -58,7 +58,7 @@ LeRobotHW::LeRobotHW():
 
     /* Bring to initial state */
     this->homing();
-    this->set_des_gripper(GripperState::Closed);
+    this->set_des_gripper(GripperState::Open);
 
     // Wait until the robot reaches the home position (homeing complete)
     // We'll poll the current joint positions and compare to home position with a tolerance
