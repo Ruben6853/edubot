@@ -157,6 +157,8 @@ namespace km {
         void set_joint_velocities(const Eigen::VectorXd& velocities);
         [[nodiscard]] Eigen::VectorXd get_joint_velocities() const;
 
+        [[nodiscard]] Eigen::MatrixXd get_jacobian() const { return jacobian; }
+
         [[nodiscard]] Eigen::Transform<double, 3, Eigen::Isometry> get_end_effector_transform() const;
         [[nodiscard]] Eigen::Vector3d get_end_effector_position() const;
         [[nodiscard]] Eigen::Vector3d get_end_effector_rotation() const;

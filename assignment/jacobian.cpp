@@ -4,6 +4,20 @@
 
 #include "kinematics.hpp"
 
+int get_matrix_rank(const Eigen::MatrixXd& matrix) {
+    Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp(matrix);
+    return lu_decomp.rank();
+}
+void round_matrix(Eigen::MatrixXd& matrix, double tol = 1e-10) {
+    for (int i = 0; i < matrix.rows(); ++i) {
+        for (int j = 0; j < matrix.cols(); ++j) {
+            if (std::abs(matrix(i, j)) < tol) {
+                matrix(i, j) = 0.0;
+            }
+        }
+    }
+}
+
 int main() {
      auto robot = km::SequentialRobot({
     KMLINK("base", 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, M_PI),
@@ -26,26 +40,47 @@ int main() {
         {0.0,0.0,0.07,3.141,0.000,0.00},
         {0.0, 0.0452, 0.45, -0.785, 0.000, 3.141}
     };
-    std::vector<std::optional<Eigen::VectorXd>> ik_solutions;
-    for (const auto& pose : ee_poses) {
-        auto ik_solution = robot.required_joint_angles(
-            pose,
-            0.15,
-            1e-4,
-            500,
-            1000,
-            0.1
-            );
-        if (ik_solution) {
-            auto ee_pose = robot.get_end_effector_pose();
-            std::cout << "IK solution found for pose: \n" << pose.transpose()
-            << "\nJoint angles: " << ik_solution->transpose()/M_PI *180.0f
-            << "\nEnd effector pose for IK solution: \n" << ee_pose.transpose()<< std::endl;
-        }
-        else {
-            std::cout << "No IK solution found for pose: \n" << pose.transpose() << std::endl;
+    // std::vector<std::optional<Eigen::VectorXd>> ik_solutions;
+    // for (const auto& pose : ee_poses) {
+    //     auto ik_solution = robot.required_joint_angles(
+    //         pose,
+    //         0.15,
+    //         1e-4,
+    //         500,
+    //         1000,
+    //         0.1
+    //         );
+    //     if (ik_solution) {
+    //         auto ee_pose = robot.get_end_effector_pose();
+    //         std::cout << "IK solution found for pose: \n" << pose.transpose()
+    //         << "\nJoint angles: " << ik_solution->transpose()/M_PI *180.0f
+    //         << "\nEnd effector pose for IK solution: \n" << ee_pose.transpose()<< std::endl;
+    //     }
+    //     else {
+    //         std::cout << "No IK solution found for pose: \n" << pose.transpose() << std::endl;
+    //     }
+    //     std::cout << "-----------------------------" << std::endl;
+    //     ik_solutions.push_back(ik_solution);
+    // }
+    std::vector<std::optional<Eigen::Vector<double, 5>>> ik_solutions = {
+        {{-52.7, 36.9, -50.2, 13.3, 90.0}},
+        {{-74.7, -10.4, 25.6, 74.9, -15.3}},
+        {{0.0, 53.9, -8.9, 90.0, 90.0}},
+        std::nullopt,
+        {{0.0, 13.0, 47.0, 75.0, 180.0}}
+    };
+    for (const auto& sol: ik_solutions) {
+        if (sol) {
+            robot.set_joint_positions(*sol / M_PI * 180.0f);
+            auto jac = robot.get_jacobian();
+            round_matrix(jac);
+            std::cout << "IK solution joint angles (degrees): " << sol->transpose()
+                << "\n jacobian rank: " << get_matrix_rank(jac)
+                << "\nJacobian at this pose: \n"
+            << jac << std::endl;
+        } else {
+            std::cout << "No IK solution found for this pose." << std::endl;
         }
         std::cout << "-----------------------------" << std::endl;
-        ik_solutions.push_back(ik_solution);
     }
 }
