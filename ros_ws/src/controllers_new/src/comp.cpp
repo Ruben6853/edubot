@@ -41,7 +41,7 @@ Controller::Controller() :
     auto ik_sol_pick_up = dummy.required_joint_angles(pose_wp_above_pick_up);
     if (ik_sol_pick_up) {
         joint_wp_above_pick_up = ik_sol_pick_up->head<5>();
-        // joint_wp_above_pick_up[0] -= this->angle;
+        joint_wp_above_pick_up[0] -= this->angle;
         joint_wp_above_pick_up[4] += M_PI;
         RCLCPP_INFO(this->get_logger(), "Calculated joint waypoint for above pick up position");
         std::cout << "Joint waypoint for above pick up position: " << joint_wp_above_pick_up.transpose() << std::endl;
@@ -162,7 +162,7 @@ void Controller::_timer_callback() {
     const double approach_speed_pick = 0.07f;
     const double approach_speed_place = 0.04f;
     const double midpoint_tol = 0.1f;
-    const double gripper_open = 0.4f;
+    const double gripper_open = 0.7f;
 
     switch (place_cycle) {
         case -1:
@@ -198,9 +198,15 @@ void Controller::_timer_callback() {
             }
             break;
         case goal_type::to_above_pick_up:
-            target_gripper_pos = gripper_open;
+            if (place_cycle == 0) {
+                target_gripper_pos = gripper_open;
+            }
             if (move_j(joint_wp_above_pick_up, 0.05f)) {
-                change_goal(goal_type::pick_up);
+                if (place_cycle == 0) {
+                    change_goal(goal_type::pick_up);
+                } else {
+                    change_goal(goal_type::place);
+                }
                 std::cout << "Reached above pick up position, picking up." << std::endl;
             }
             break;
@@ -219,7 +225,11 @@ void Controller::_timer_callback() {
             break;
         case goal_type::close_gripper:
             if (close_gripper(0.5f, dt, 0.1f, 0.5f)) {
-                change_goal(goal_type::to_midpoint);
+                if (place_cycle ==0) {
+                    change_goal(goal_type::to_midpoint);
+                } else {
+                    change_goal(goal_type::to_above_pick_up);
+                }
                 std::cout << "Gripper closed, moving to midpoint " << std::endl;
             }
             break;
@@ -231,7 +241,11 @@ void Controller::_timer_callback() {
             break;
         case goal_type::to_above_place:
             if (move_j(joint_wp_above_place, 0.05f)) {
-                change_goal(goal_type::place);
+                if (place_cycle == 0) {
+                    change_goal(goal_type::place);
+                } else {
+                    change_goal(goal_type::pick_up);
+                }
                 std::cout << "Reached above place position, moving down to place." << std::endl;
             }
             break;
@@ -249,7 +263,11 @@ void Controller::_timer_callback() {
             break;
         case goal_type::open_gripper:
             if (open_gripper()) {
-                change_goal(goal_type::rise);
+                if (place_cycle > 0) {
+                    change_goal(goal_type::idle);
+                } else {
+                    change_goal(goal_type::rise);
+                }
                 std::cout << "Gripper opened, rising." << std::endl;
             }
             break;
@@ -261,7 +279,7 @@ void Controller::_timer_callback() {
             break;
         case goal_type::to_midpoint_back:
             if (move_j(joint_wp_traj_midpoint, 0.3f)) {
-                change_goal(goal_type::to_above_pick_up);
+                change_goal(goal_type::to_above_place);
                 std::cout << "Reached trajectory midpoint, restarting cycle." << std::endl;
             }
             break;
@@ -385,21 +403,21 @@ bool Controller::move_down_until_floor(double vel, double dt, double vel_thresho
 }
 
 bool Controller::open_gripper() {
-    if (gripper_pos > 0.6f) {
-        RCLCPP_INFO(this->get_logger(), "Gripper closed to target position.");
+    if (gripper_pos > 0.8f) {
+        RCLCPP_INFO(this->get_logger(), "Gripper opened to target position.");
         return true;
     }
-    if (place_cycle == 0) {
+    if (place_cycle >= 0) {
         joint_wp_for_open = robot.get_joint_positions();
     }
-    target_gripper_pos = 0.9f;
+    target_gripper_pos = 1.0f;
     publish(joint_wp_for_open);
     return false;
 }
 
 bool Controller::close_gripper(double vel, double dt, double vel_threshold, double no_move_time_threshold) {
-
-    if (gripper_pos < 0.2f) {
+    target_gripper_pos = 0.25f;
+    if (gripper_pos < target_gripper_pos+0.01) {
         RCLCPP_INFO(this->get_logger(), "Gripper closed to minimum position.");
         return true;
     }
@@ -424,7 +442,6 @@ bool Controller::close_gripper(double vel, double dt, double vel_threshold, doub
     }
 
     _close_gripper_last_pos = gripper_pos;
-    target_gripper_pos = 0.0f;
     publish(robot.get_joint_positions());
     return false;
 }
