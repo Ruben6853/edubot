@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(pdf|pptx|ppt|xlsx|xls|docx|doc\\)$')",
+      "Bash(grep -r \"jacobian\\\\|Jacobian\" /c/Users/Wesse/OneDrive/Documents/GitHub/edubot/ros_ws/src/ --include=*.cpp --include=*.h --include=*.py)",
+      "Bash(grep -r \"forward.*kinematic\\\\|Forward.*Kinematic\" /c/Users/Wesse/OneDrive/Documents/GitHub/edubot/ros_ws/src/ --include=*.cpp --include=*.h --include=*.py)",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/Wesse/OneDrive/Documents/GitHub/edubot/ros_ws/src/python_controllers -name *.py -type f)",
+      "Bash(python fk-testing.py)",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)",
+      "Bash(python run_ik_test.py)",
+      "Bash(bash -c \"source /opt/ros/jazzy/setup.bash 2>/dev/null || source /opt/ros/humble/setup.bash 2>/dev/null && colcon build --packages-select controllers_new 2>&1\")",
+      "Read(//opt/**)",
+      "Bash(wsl --list)",
+      "Bash(wsl bash:*)",
+      "Bash(wsl -- bash -n /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/run_demo.sh)",
+      "Bash(wsl.exe bash:*)",
+      "Bash(wsl.exe -e bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh)",
+      "Bash(source /opt/ros/jazzy/setup.bash)",
+      "Bash(colcon build:*)",
+      "Bash(wsl -- bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh)",
+      "Bash(where wsl:*)",
+      "Bash(wsl --list --running)",
+      "Bash(wsl -d Ubuntu -e bash -c \"ls /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/ | head -10\")",
+      "Bash(wsl -d Ubuntu -e bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh)",
+      "Bash(wsl.exe -d Ubuntu bash -c \"bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh\")",
+      "Bash(wsl.exe -d Ubuntu bash -c \"cd /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot && python3 run_ik_test.py\")",
+      "Bash(wsl.exe -d Ubuntu bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh)",
+      "Bash(MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL=\"*\" wsl.exe -d Ubuntu bash /mnt/c/Users/Wesse/OneDrive/Documents/GitHub/edubot/test_run.sh)"
+    ]
+  }
+}
